@@ -5,14 +5,12 @@ export LD_LIBRARY_PATH=${JAVA_HOME}/jre/lib/amd64/server/:${LD_LIBRARY_PATH}
 export RUST_BACKTRACE=1
 
 function main {
-    pushd `dirname $0`/..
     export ROOT=`pwd`
-    build
-    test
-    doc jerk
-    doc jerk-build
-    doc jerk-test
-    popd
+    build           || exit 1
+    test            || exit 1
+    doc jerk        || exit 1
+    doc jerk-build  || exit 1
+    doc jerk-test   || exit 1
 }
 
 function build {
@@ -22,12 +20,12 @@ function build {
 function test {
     export CLASSPATH=${ROOT}/target/debug/java/jars/example-hello-world-jar.jar
     export PATH=${ROOT}/target/debug:${PATH}
-    print_run cargo test --all
+    print_run cargo test --all || exit 1
 }
 
 function doc {
     cd $1
-    print_run cargo +nightly doc --no-deps --features="nightly"
+    print_run cargo +nightly doc --no-deps --features="nightly" || exit 1
 }
 
 function print_run {
@@ -36,4 +34,8 @@ function print_run {
     "$@"
 }
 
+pushd `dirname $0`/..
 main
+ERR=$?
+popd
+exit $ERR
