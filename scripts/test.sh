@@ -24,8 +24,21 @@ function test {
 }
 
 function doc {
-    cd $1
-    print_run cargo +nightly doc --no-deps --features="nightly" || exit 1
+    pushd $1 >/dev/null
+    if [[ -z "${CI}" ]]; then
+        # Not a CI build, assume you have a sane nightly installed
+        print_run cargo +nightly doc --no-deps --features="nightly" || (popd >/dev/null && exit 1)
+
+    elif [ "${RUSTUP_TOOLCHAIN}" = "nightly" ]; then
+        # CI, but nightly
+        print_run cargo doc --no-deps --features="nightly" || (popd >/dev/null && exit 1)
+
+    else
+        # CI, !nightly
+        print_run cargo doc --no-deps || (popd >/dev/null && exit 1)
+
+    fi
+    popd >/dev/null
 }
 
 function print_run {
@@ -34,8 +47,8 @@ function print_run {
     "$@"
 }
 
-pushd `dirname $0`/..
+pushd `dirname $0`/.. >/dev/null
 main
 ERR=$?
-popd
+popd >/dev/null
 exit $ERR
