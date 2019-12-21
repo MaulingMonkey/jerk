@@ -50,13 +50,15 @@ pub fn run_test(package: &str, class: &str, method: &str) -> Result<()> {
     
     let class_id    = format!("{}/{}\0", package.replace(".", "/"), class);
     let method_id   = format!("{}\0", method);
-
+    
     // Safety:
     // * `**env` must be valid (non-null, not dangling, valid fn pointers if present)
     // * string IDs must be `\0` terminated
     unsafe {
         let class_id    = (**env).FindClass.unwrap()(env, class_id.as_ptr() as *const _);
+        assert_ne!(class_id, null_mut(), "Failed to FindClass {}.{} - the corresponding .jar may not be loaded", package, class);
         let method_id   = (**env).GetStaticMethodID.unwrap()(env, class_id, method_id.as_ptr() as *const _, "()V\0".as_ptr() as *const _);
+        assert_ne!(method_id, null_mut(), "Failed to GetStaticMethodID {}.{}", class, method);
         (**env).CallStaticVoidMethodA.unwrap()(env, class_id, method_id, [].as_ptr());
         if (**env).ExceptionCheck.unwrap()(env) == JNI_TRUE {
             (**env).ExceptionDescribe.unwrap()(env);
