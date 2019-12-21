@@ -116,8 +116,6 @@ impl<'a> Archive<'a> {
             }
         }
 
-        eprintln!("{:?}", &cmd);
-
         let status = cmd.status()?;
         if status.success() {
             Ok(())

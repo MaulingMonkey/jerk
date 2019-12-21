@@ -3,5 +3,7 @@ use std::env::var_os;
 
 fn main() {
     jerk_build::metabuild();
-    println!("cargo:rustc-link-search=native={}", PathBuf::from(var_os("JAVA_HOME").expect("${JAVA_HOME} not set")).join("lib").display());
+    let java_home = PathBuf::from(var_os("JAVA_HOME").expect("${JAVA_HOME} not set"));
+    println!("cargo:rustc-link-search=native={}", java_home.join("lib").display());
+    println!("cargo:rustc-link-search=native={}", java_home.join("jre/lib/amd64/server").display());
 }

@@ -1,31 +1,31 @@
 //! `%JAVA_HOME%\bin\javac` - Compile `.class` files from `.java` files
 
 use std::io::{Error, ErrorKind};
-use std::path::{Path};
+use std::path::{PathBuf};
 use std::process::Command;
 
 /// std::io::[Result](https://doc.rust-lang.org/std/io/type.Result.html)
 pub type Result<T> = std::io::Result<T>;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Compile<'a> {
-    pub java_home:                  Option<&'a Path>,
+pub struct Compile {
+    pub java_home:                  Option<PathBuf>,
     pub debug_info:                 Option<DebugInfo>,
     pub nowarn:                     bool,
     pub verbose:                    bool,
     pub deprecation:                bool,
-    pub class_paths:                &'a [&'a Path],
-    pub source_paths:               &'a [&'a Path],
-    pub boot_class_paths:           &'a [&'a Path],
-    pub extension_dirs:             &'a [&'a Path],
-    pub endorsed_dirs:              &'a [&'a Path],
+    pub class_paths:                Vec<PathBuf>,
+    pub source_paths:               Vec<PathBuf>,
+    pub boot_class_paths:           Vec<PathBuf>,
+    pub extension_dirs:             Vec<PathBuf>,
+    pub endorsed_dirs:              Vec<PathBuf>,
     // -proc:{none,only}
-    pub annotation_processors:      &'a [&'a str],
-    pub annotation_processor_paths: &'a [&'a Path],
+    pub annotation_processors:      Vec<String>,
+    pub annotation_processor_paths: Vec<PathBuf>,
     pub keep_parameter_names:       bool,
-    pub out_classes:                Option<&'a Path>,
-    pub out_sources:                Option<&'a Path>,
-    pub out_headers:                Option<&'a Path>,
+    pub out_classes:                Option<PathBuf>,
+    pub out_sources:                Option<PathBuf>,
+    pub out_headers:                Option<PathBuf>,
     // -implicit
     // -encoding
     // -source <release>
@@ -33,10 +33,10 @@ pub struct Compile<'a> {
     // -profile <profile>
     // -version
     // -help
-    pub annotation_parameters:      &'a [(&'a str, &'a str)],
+    pub annotation_parameters:      Vec<(String, String)>,
     pub fatal_warnings:             bool,
 
-    pub files:                      &'a [&'a Path],
+    pub files:                      Vec<PathBuf>,
 
     #[doc(hidden)] pub _non_exhaustive: (),
 }
@@ -55,7 +55,7 @@ impl std::default::Default for DebugInfo {
     fn default() -> Self { Self::ALL }
 }
 
-impl<'a> Compile<'a> {
+impl Compile {
     pub fn new() -> Self {
         Default::default()
     }
@@ -71,9 +71,9 @@ impl<'a> Compile<'a> {
 
     pub fn command(&self) -> Result<Command> {
         let mut java_home_buf = None;
-        let java_home = self.java_home.or_else(||{
+        let java_home = self.java_home.as_ref().or_else(||{
             java_home_buf = Some(crate::search::find_java_home()?);
-            java_home_buf.as_ref().map(|p| &**p)
+            java_home_buf.as_ref()
         }).ok_or_else(||
             Error::new(ErrorKind::NotFound, "JAVA_HOME not set and could not be found, unable to run")
         )?;
@@ -96,15 +96,15 @@ impl<'a> Compile<'a> {
             }
         }
 
-        for p in self.class_paths           { cmd.arg("-cp").arg(p); }
-        for p in self.source_paths          { cmd.arg("-sourcepath").arg(p); }
-        for p in self.boot_class_paths      { cmd.arg("-bootclasspath").arg(p); }
-        for p in self.extension_dirs        { cmd.arg("-extdirs").arg(p); }
+        for p in self.class_paths.iter()      { cmd.arg("-cp").arg(p); }
+        for p in self.source_paths.iter()     { cmd.arg("-sourcepath").arg(p); }
+        for p in self.boot_class_paths.iter() { cmd.arg("-bootclasspath").arg(p); }
+        for p in self.extension_dirs.iter()   { cmd.arg("-extdirs").arg(p); }
 
         let processors = self.annotation_processors.join(",");
         if processors.len() != 0 { cmd.arg("-processors").arg(processors); }
 
-        for p in self.annotation_processor_paths { cmd.arg("-processorpath").arg(p); }
+        for p in self.annotation_processor_paths.iter() { cmd.arg("-processorpath").arg(p); }
 
         for (flag, dir) in [
             ("-d", self.out_classes.as_ref()),
@@ -126,8 +126,8 @@ impl<'a> Compile<'a> {
             if cond { cmd.arg(flag); }
         }
 
-        for (k,v) in self.annotation_parameters { cmd.arg(format!("-A{}={}", k, v)); }
-        for file in self.files { cmd.arg(file); }
+        for (k,v) in self.annotation_parameters.iter() { cmd.arg(format!("-A{}={}", k, v)); }
+        for file in self.files.iter() { cmd.arg(file); }
 
         Ok(cmd)
     }

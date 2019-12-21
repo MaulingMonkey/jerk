@@ -1,0 +1,29 @@
+language: rust
+
+branches:
+  except:
+    - /^v\d+\.\d+\.\d+$/ # Exclude tags in the style of v1.2.3
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - rust: nightly
+  include:
+    - { os: linux, rust: 1.36.0   }
+    - { os: linux, rust: stable   }
+    - { os: linux, rust: beta     }
+    - { os: linux, rust: nightly  }
+
+script:
+  - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+  - pushd scripts
+  - chmod 755 ./test.sh
+  - ./test.sh
+  - popd
+
+addons:
+  apt:
+    packages:
+      - openjdk-8-jdk
+      - openjdk-8-jre-headless
+      - unzip
