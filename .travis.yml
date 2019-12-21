@@ -1,5 +1,4 @@
 language: rust
-sudo: false
 
 branches:
   except:
@@ -11,12 +10,12 @@ matrix:
     - rust: nightly
   include:
     - { os: linux, rust: 1.36.0   }
-    #- { os: linux, rust: stable   }
-    #- { os: linux, rust: beta     }
-    #- { os: linux, rust: nightly  }
+    - { os: linux, rust: stable   }
+    - { os: linux, rust: beta     }
+    - { os: linux, rust: nightly  }
 
 script:
-  - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/
+  - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
   - pushd scripts
   - chmod 755 ./test.sh
   - ./test.sh
@@ -26,8 +25,5 @@ addons:
   apt:
     packages:
       - openjdk-8-jdk
+      - openjdk-8-jre-headless
       - unzip
-
-cache:
-  directories:
-    - $TRAVIS_HOME/android-sdk-tmp/
