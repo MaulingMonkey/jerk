@@ -1,0 +1,22 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package]
+name            = "jerk-build"
+version         = "0.1.0"
+authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
+edition         = "2018"
+description     = "Java Embedding Rust Kit - build.rs / metabuild script"
+documentation   = "https://docs.rs/jerk-build/"
+repository      = "https://github.com/MaulingMonkey/jerk"
+keywords        = ["java", "jvm", "build.rs", "metabuild"]
+categories      = ["development-tools::testing"]
+license         = "MIT OR Apache-2.0"
+include         = ["/src/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "Readme.md"]
+
+[features]
+default         = []
+nightly         = []
+
+[dependencies]
+bitflags        = "1.2"
+cargo_metadata  = "0.8"

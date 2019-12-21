@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "presentation": { "clear": true },
+    "problemMatcher": ["$rustc"],
+    "type": "shell",
+    "options": { "cwd": "${workspaceFolder}", "env": { "RUST_BACKTRACE": "1" } },
+    "tasks": [
+        { "group": { "kind": "build", "isDefault": true }, "label": "scripts\\test", "command": "scripts\\test" },
+        { "group": "build", "label": "cargo clean", "command": "cargo clean" },
+        { "label": "scripts\\publish --dry-run",    "command": "scripts\\publish --dry-run" },
+        { "label": "scripts\\publish",              "command": "scripts\\publish", "env": { "DELAY": "10" } },
+
+        // Links
+        { "label": "Open local docs", "windows": { "command": "start \"\" target/doc/jerk/index.html" } },
+    ]
+}

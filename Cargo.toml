@@ -1,0 +1,9 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = [
+    "example-hello-world-jar",
+    "jerk",
+    "jerk-build",
+    "jerk-test",
+]

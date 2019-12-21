@@ -1,0 +1,22 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package]
+name = "example-hello-world-jar"
+version = "0.0.0"
+publish = false
+authors = ["MaulingMonkey <git@maulingmonkey.com>"]
+edition = "2018"
+links   = "jvm"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+jni-sys     = "0.3"
+
+[build-dependencies]
+jerk-build  = { version = "0.1", path = "../jerk-build" }
+
+[dev-dependencies]
+jerk-test   = { version = "0.1", path = "../jerk-test" }
+lazy_static = "1.4"

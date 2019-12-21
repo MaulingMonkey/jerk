@@ -1,0 +1,18 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package]
+name            = "jerk"
+version         = "0.0.0"
+authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
+edition         = "2018"
+description     = "Java Embedding Rust Kit - Placeholder"
+documentation   = "https://docs.rs/jerk/"
+repository      = "https://github.com/MaulingMonkey/jerk"
+keywords        = []
+categories      = []
+license         = "MIT OR Apache-2.0"
+include         = ["/src/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "Readme.md"]
+
+[features]
+default         = []
+nightly         = []

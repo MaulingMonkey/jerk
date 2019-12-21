@@ -1,0 +1,22 @@
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package]
+name            = "jerk-test"
+version         = "0.1.0"
+authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
+edition         = "2018"
+description     = "Java Embedding Rust Kit - Unit Testing"
+documentation   = "https://docs.rs/jerk-test/"
+repository      = "https://github.com/MaulingMonkey/jerk"
+keywords        = ["java", "jvm"]
+categories      = ["development-tools::build-utils"]
+license         = "MIT OR Apache-2.0"
+include         = ["/src/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "Readme.md"]
+
+[features]
+default         = []
+nightly         = []
+
+[dependencies]
+jni-sys         = "0.3"
+lazy_static     = "1.4"
