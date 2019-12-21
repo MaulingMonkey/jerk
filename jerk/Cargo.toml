@@ -13,6 +13,9 @@ categories      = []
 license         = "MIT OR Apache-2.0"
 include         = ["/src/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "Readme.md"]
 
+[package.metadata.docs.rs]
+features = ["nightly"]
+
 [features]
 default         = []
 nightly         = []
