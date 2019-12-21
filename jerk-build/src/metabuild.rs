@@ -1,6 +1,8 @@
 use crate::*;
 use std::convert::{AsRef};
 use std::fs;
+use std::io;
+use std::path::{Path, PathBuf};
 
 /// A cargo [metabuild] compatible entry point.
 /// 
@@ -41,8 +43,9 @@ pub fn metabuild() {
     println!("rustc-env=JAVA_HOME={}", java_home.display());
     env::set_var("JAVA_HOME", &java_home);
 
-    println!("cargo:rustc-link-lib=static=jvm");
-    println!("cargo:rustc-link-search=native={}", java_home.display());
+    println!("cargo:rustc-link-lib=jvm");
+    println!("cargo:rustc-link-search=native={}", java_home.join("lib").display());
+    println!("cargo:rustc-link-search=native={}", java_home.join("jre/lib/amd64/server").display());
 
     //let cwd           = env::current_dir().unwrap();
     let metadata        = cargo_metadata::MetadataCommand::new().exec().expect("cargo-metadata failed");
@@ -56,7 +59,6 @@ pub fn metabuild() {
         _custom     => None,
     };
 
-    let java_home = Some(java_home.as_ref());
     let out_java = metadata.target_directory.join(profile).join("java");
     let out_classes = out_java.join("classes");
     let out_sources = out_java.join("source" );
@@ -69,22 +71,42 @@ pub fn metabuild() {
     let _ = fs::create_dir(&out_headers);
     let _ = fs::create_dir(&out_jars);
 
+    let mut files = Vec::new();
+    find_java_srcs(Path::new("."), &mut files).unwrap_or_else(|err| panic!("Failed to enumerate/read Java source code: {}", err));
+
     javac::Compile {
-        java_home,
+        java_home: Some(java_home.clone()),
         debug_info,
-        out_classes: Some(out_classes.as_ref()),
-        out_sources: Some(out_sources.as_ref()),
-        out_headers: Some(out_headers.as_ref()),
-        files: &["src/*.java".as_ref()][..],
+        out_classes: Some(out_classes.clone()),
+        out_sources: Some(out_sources),
+        out_headers: Some(out_headers),
+        files,
         ..javac::Compile::default()
     }.exec().unwrap();
 
     jar::Archive {
-        java_home,
+        java_home: Some(java_home.as_ref()),
         jar_file:   Some(out_jar.as_ref()),
         files:&[
             (out_classes.as_ref(), &[".".as_ref()][..]),
         ][..],
         ..jar::Archive::default()
     }.create().unwrap();
+}
+
+fn find_java_srcs(path: &Path, files: &mut Vec<PathBuf>) -> io::Result<()> {
+    for entry in fs::read_dir(path)? {
+        let entry = entry?;
+        let path = entry.path();
+        let name = entry.file_name();
+        let name_lossy = name.to_string_lossy();
+        const DOT_JAVA : &'static str = ".java";
+
+        if path.is_dir() {
+            find_java_srcs(&path, files)?;
+        } else if name_lossy.get(name_lossy.len()-DOT_JAVA.len()..).map(|ext| ext.eq_ignore_ascii_case(DOT_JAVA)).unwrap_or(false) {
+            files.push(path);
+        }
+    }
+    Ok(())
 }
