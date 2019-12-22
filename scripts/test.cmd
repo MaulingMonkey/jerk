@@ -1,9 +1,10 @@
 @pushd "%~dp0.." && setlocal
 @call :build
 @call :test
-@call :doc "%~dp0../jerk"
-@call :doc "%~dp0../jerk-build"
-@call :doc "%~dp0../jerk-test"
+@call :doc "%~dp0..\jerk"
+@call :doc "%~dp0..\jerk-build"
+@call :doc "%~dp0..\jerk-test"
+@where wsl >NUL 2>NUL && wsl bash --login -c scripts/test.sh
 @popd && endlocal && goto :EOF
 
 
@@ -22,6 +23,6 @@ cargo test --all
 @exit /b %ERRORLEVEL%
 
 :doc
-@cd "%~1"
+@pushd "%~1"
 cargo +nightly doc --no-deps --features="nightly"
-@exit /b %ERRORLEVEL%
+@popd && exit /b %ERRORLEVEL%
