@@ -11,8 +11,8 @@ This is **not** an official project of Google, Oracle, Sun Microsystems, or anyo
 
 | Crate         | Badges | Notes |
 | ------------- | ---- | ----- |
-| jerk-build    | [![Crates.io](https://img.shields.io/crates/v/jerk-build.svg)](https://crates.io/crates/jerk-build) [![Docs](https://docs.rs/jerk-build/badge.svg)](https://docs.rs/jerk-build/)  | Compile Java via [metabuild] / [build.rs] script
-| jerk-test     | [![Crates.io](https://img.shields.io/crates/v/jerk-test.svg)](https://crates.io/crates/jerk-test)   [![Docs](https://docs.rs/jerk-test/badge.svg)](https://docs.rs/jerk-test/)    | Unit test Java from Rust
+| [jerk-build](https://github.com/MaulingMonkey/jerk/tree/master/jerk-build)    | [![Crates.io](https://img.shields.io/crates/v/jerk-build.svg)](https://crates.io/crates/jerk-build) [![Docs](https://docs.rs/jerk-build/badge.svg)](https://docs.rs/jerk-build/)  | Compile Java via [metabuild] / [build.rs] script
+| [jerk-test](https://github.com/MaulingMonkey/jerk/tree/master/jerk-test)      | [![Crates.io](https://img.shields.io/crates/v/jerk-test.svg)](https://crates.io/crates/jerk-test)   [![Docs](https://docs.rs/jerk-test/badge.svg)](https://docs.rs/jerk-test/)    | Unit test Java from Rust
 
 | Branch | Badges | Notes |
 | ------ | ------ | ----- |
