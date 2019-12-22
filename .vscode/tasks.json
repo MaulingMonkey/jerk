@@ -11,6 +11,13 @@
         { "label": "scripts\\publish",              "command": "scripts\\publish", "env": { "DELAY": "10" } },
 
         // Links
-        { "label": "Open local docs", "windows": { "command": "start \"\" target/doc/jerk/index.html" } },
+        { "label": "Docs (local)",          "windows": { "command": "start \"\" target/doc/jerk/index.html"                     }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
+        { "label": "docs.rs (jerk-build)",  "windows": { "command": "start \"\" https://docs.rs/jerk-build/"                    }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
+        { "label": "docs.rs (jerk-test)",   "windows": { "command": "start \"\" https://docs.rs/jerk-test/"                     }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
+        { "label": "crates.io (jerk-build)","windows": { "command": "start \"\" https://crates.io/crates/jerk-build"            }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
+        { "label": "crates.io (jerk-test)", "windows": { "command": "start \"\" https://crates.io/crates/jerk-test"             }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
+        { "label": "Github",                "windows": { "command": "start \"\" https://github.com/MaulingMonkey/jerk"          }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
+        { "label": "Issues",                "windows": { "command": "start \"\" https://github.com/MaulingMonkey/jerk/issues"   }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
+        { "label": "Travis (CI)",           "windows": { "command": "start \"\" https://travis-ci.org/MaulingMonkey/jerk"       }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
     ]
 }
