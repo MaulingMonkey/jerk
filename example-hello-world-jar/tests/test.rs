@@ -1,5 +1,4 @@
-use jerk_test::*;
 
-const PACKAGE : &'static str = "com.maulingmonkey.jerk.example_hello_world_jar";
-
-#[test] fn adder_test() -> Result<()> { run_test(PACKAGE, "Adder", "test") }
+#[test] fn test() -> Result<(), jerk_test::JavaTestError> {
+    jerk_test::run_test("com.maulingmonkey.jerk.example_hello_world_jar", "Adder", "test")
+}

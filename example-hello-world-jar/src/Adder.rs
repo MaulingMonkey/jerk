@@ -21,3 +21,7 @@ use std::ptr::null_mut;
 #[no_mangle] pub extern "stdcall" fn Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Adder_add__II(_env: *mut JNIEnv, _this: jobject, a: jint, b: jint) -> jint {
     a + b
 }
+
+#[test] fn test() -> Result<(), jerk_test::JavaTestError> {
+    jerk_test::run_test("com.maulingmonkey.jerk.example_hello_world_jar", "Adder", "test")
+}
