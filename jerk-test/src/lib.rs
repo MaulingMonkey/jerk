@@ -4,6 +4,7 @@
 use jni_sys::*;
 use std::convert::*;
 use std::fmt::{self, Debug, Display, Formatter};
+use std::path::{Path, PathBuf};
 use std::ptr::null_mut;
 
 pub type Result<T> = std::result::Result<T, JavaTestError>;
@@ -94,8 +95,21 @@ fn create_java_vm() -> *mut JavaVM {
         //"-verbose:jni".to_string(),
         "-ea".to_string(),  // Enable Assertions
         "-esa".to_string(), // Enable System Assertions
-        format!("-Djava.class.path={}", std::env::var("CLASSPATH").unwrap()),
+        format!("-Djava.class.path={profile_dir}/java/jars/{pkg_name}.jar", profile_dir=taget_profile_dir().display(), pkg_name=std::env::var("CARGO_PKG_NAME").unwrap()),
     ]).unwrap()
+}
+
+fn taget_profile_dir() -> PathBuf {
+    let mut dir = jerk::paths::env("OUT_DIR").unwrap();
+    while !is_profile_dir(&dir) && dir.pop() {}
+    eprintln!("{}", dir.display());
+    dir
+}
+
+fn is_profile_dir(path: &Path) -> bool {
+    if path.parent().and_then(|p| p.file_name()).and_then(|n| n.to_str()) != Some("target") { return false; }
+    if !path.join("java").exists() { return false; }
+    true
 }
 
 struct ThreadSafe<T>(pub T);

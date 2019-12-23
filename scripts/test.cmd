@@ -14,7 +14,6 @@ cargo build --all
 @exit /b %ERRORLEVEL%
 
 :test
-@set CLASSPATH=%~dp0..\target\debug\java\jars\example-hello-world-jar.jar
 cargo test --all
 @exit /b %ERRORLEVEL%
 

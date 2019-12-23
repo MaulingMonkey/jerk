@@ -14,7 +14,6 @@ function build {
 }
 
 function test {
-    export CLASSPATH=${ROOT}/target/debug/java/jars/example-hello-world-jar.jar
     print_run cargo test --all || exit 1
 }
 
