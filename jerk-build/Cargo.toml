@@ -2,14 +2,14 @@
 
 [package]
 name            = "jerk-build"
-version         = "0.1.2"
+version         = "0.1.3"
 authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition         = "2018"
 description     = "Java Embedding Rust Kit - build.rs / metabuild script"
 documentation   = "https://docs.rs/jerk-build/"
 repository      = "https://github.com/MaulingMonkey/jerk"
 keywords        = ["java", "jvm", "build", "metabuild"]
-categories      = ["development-tools::testing"]
+categories      = ["development-tools::build-utils"]
 license         = "MIT OR Apache-2.0"
 include         = ["/src/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
 readme          = "Readme.md"
@@ -22,5 +22,6 @@ default         = []
 nightly         = []
 
 [dependencies]
+jerk            = { version = "0.1.3", path = "../jerk" }
 bitflags        = "1.2"
 cargo_metadata  = "0.8"

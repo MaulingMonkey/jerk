@@ -1,4 +1,4 @@
-# **JERK**: **J**ava **E**mbedding **R**ust **K**it
+# **jerk**: **J**ava **E**mbedding **R**ust **K**it
 
 [![GitHub](https://img.shields.io/github/stars/MaulingMonkey/jerk.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/jerk)
 ![unsafe: yes](https://img.shields.io/badge/unsafe-yes-yellow.svg)
@@ -10,9 +10,10 @@ Similar to [cc], but for Java.
 This is **not** an official project of Google, Oracle, Sun Microsystems, or anyone else.
 
 | Crate         | Badges | Notes |
-| ------------- | ---- | ----- |
-| jerk-build    | [![Crates.io](https://img.shields.io/crates/v/jerk-build.svg)](https://crates.io/crates/jerk-build) [![Docs](https://docs.rs/jerk-build/badge.svg)](https://docs.rs/jerk-build/)  | Compile Java via [metabuild] / [build.rs] script
-| jerk-test     | [![Crates.io](https://img.shields.io/crates/v/jerk-test.svg)](https://crates.io/crates/jerk-test)   [![Docs](https://docs.rs/jerk-test/badge.svg)](https://docs.rs/jerk-test/)    | Unit test Java from Rust
+| ------------- | ------ | ----- |
+| [jerk](https://github.com/MaulingMonkey/jerk/tree/master/jerk)                | [![Crates.io](https://img.shields.io/crates/v/jerk.svg)](https://crates.io/crates/jerk)             [![Docs](https://docs.rs/jerk/badge.svg)](https://docs.rs/jerk/)              | Find Java paths, manage the JVM
+| [jerk-build](https://github.com/MaulingMonkey/jerk/tree/master/jerk-build)    | [![Crates.io](https://img.shields.io/crates/v/jerk-build.svg)](https://crates.io/crates/jerk-build) [![Docs](https://docs.rs/jerk-build/badge.svg)](https://docs.rs/jerk-build/)  | Compile Java via [metabuild] / [build.rs] script
+| [jerk-test](https://github.com/MaulingMonkey/jerk/tree/master/jerk-test)      | [![Crates.io](https://img.shields.io/crates/v/jerk-test.svg)](https://crates.io/crates/jerk-test)   [![Docs](https://docs.rs/jerk-test/badge.svg)](https://docs.rs/jerk-test/)    | Unit test Java from Rust
 
 | Branch | Badges | Notes |
 | ------ | ------ | ----- |

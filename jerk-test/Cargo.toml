@@ -2,14 +2,14 @@
 
 [package]
 name            = "jerk-test"
-version         = "0.1.2"
+version         = "0.1.3"
 authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition         = "2018"
 description     = "Java Embedding Rust Kit - Unit Testing"
 documentation   = "https://docs.rs/jerk-test/"
 repository      = "https://github.com/MaulingMonkey/jerk"
-keywords        = ["java", "jvm"]
-categories      = ["development-tools::build-utils"]
+keywords        = ["java", "jvm", "test"]
+categories      = ["development-tools::testing"]
 license         = "MIT OR Apache-2.0"
 include         = ["/src/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
 readme          = "Readme.md"
@@ -22,5 +22,6 @@ default         = []
 nightly         = []
 
 [dependencies]
+jerk            = { version = "0.1.3", path = "../jerk" }
 jni-sys         = "0.3"
 lazy_static     = "1.4"

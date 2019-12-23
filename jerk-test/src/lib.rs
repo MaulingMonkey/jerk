@@ -4,6 +4,7 @@
 use jni_sys::*;
 use std::convert::*;
 use std::fmt::{self, Debug, Display, Formatter};
+use std::path::{Path, PathBuf};
 use std::ptr::null_mut;
 
 pub type Result<T> = std::result::Result<T, JavaTestError>;
@@ -71,6 +72,7 @@ pub fn run_test(package: &str, class: &str, method: &str) -> Result<()> {
 }
 
 
+lazy_static::lazy_static! { static ref JVM : jerk::jvm::Library = jerk::jvm::Library::get().unwrap(); }
 
 /// Get a handle to the current Java VM, or create one if it doesn't already exist.
 pub fn test_vm() -> *mut JavaVM { **VM }
@@ -88,30 +90,26 @@ fn attach_current_thread() -> *mut JNIEnv {
 }
 
 fn create_java_vm() -> *mut JavaVM {
-    let mut vm  = 0 as *mut _;
-    let mut env = 0 as *mut _;
+    JVM.create_java_vm(vec![
+        //"-verbose:class".to_string(),
+        //"-verbose:jni".to_string(),
+        "-ea".to_string(),  // Enable Assertions
+        "-esa".to_string(), // Enable System Assertions
+        format!("-Djava.class.path={profile_dir}/java/jars/{pkg_name}.jar", profile_dir=taget_profile_dir().display(), pkg_name=std::env::var("CARGO_PKG_NAME").unwrap()),
+    ]).unwrap()
+}
 
-    let classpath = format!("-Djava.class.path={}\0", std::env::var("CLASSPATH").unwrap());
+fn taget_profile_dir() -> PathBuf {
+    let mut dir = jerk::paths::env("OUT_DIR").unwrap();
+    while !is_profile_dir(&dir) && dir.pop() {}
+    eprintln!("{}", dir.display());
+    dir
+}
 
-    let mut options = [
-        //JavaVMOption { optionString: "-verbose:class\0".as_ptr() as *const _ as *mut _, extraInfo: null_mut() },
-        //JavaVMOption { optionString: "-verbose:jni\0".as_ptr() as *const _ as *mut _, extraInfo: null_mut() },
-        JavaVMOption { optionString: "-ea\0".as_ptr() as *const _ as *mut _, extraInfo: null_mut() }, // Enable Assertions
-        JavaVMOption { optionString: "-esa\0".as_ptr() as *const _ as *mut _, extraInfo: null_mut() }, // Enable System Assertions
-        JavaVMOption { optionString: classpath.as_ptr() as *const _ as *mut _, extraInfo: null_mut() },
-    ];
-
-    let mut args = JavaVMInitArgs {
-        version:            JNI_VERSION_1_6,
-        nOptions:           options.len() as _,
-        options:            options.as_mut_ptr(),
-        ignoreUnrecognized: JNI_FALSE,
-    };
-
-    assert_eq!(JNI_OK, unsafe { JNI_GetDefaultJavaVMInitArgs(&mut args as *mut _ as *mut _) });
-    assert_eq!(JNI_OK, unsafe { JNI_CreateJavaVM(&mut vm, &mut env, &mut args as *mut _ as *mut _) });
-
-    vm
+fn is_profile_dir(path: &Path) -> bool {
+    if path.parent().and_then(|p| p.file_name()).and_then(|n| n.to_str()) != Some("target") { return false; }
+    if !path.join("java").exists() { return false; }
+    true
 }
 
 struct ThreadSafe<T>(pub T);
