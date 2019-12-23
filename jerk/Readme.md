@@ -1,11 +1,11 @@
-# **jerk**: **J**ava **E**mbedding **R**ust **K**it
+# **jerk**: **J**ava **E**mbedding **R**ust **K**it - Common
 
-Placeholder crate.  You probably wanted one of:
+[![GitHub](https://img.shields.io/github/stars/MaulingMonkey/jerk.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/jerk)
+![unsafe: yes](https://img.shields.io/badge/unsafe-no-green.svg)
+![rust: 1.36.0+](https://img.shields.io/badge/rust-1.36.0%2B-green.svg)
+[![License](https://img.shields.io/crates/l/jerk.svg)](https://github.com/MaulingMonkey/jerk)
 
-| Crate         | Badges | Notes |
-| ------------- | ------ | ----- |
-| jerk-build    | [![Crates.io](https://img.shields.io/crates/v/jerk-build.svg)](https://crates.io/crates/jerk-build) [![Docs](https://docs.rs/jerk-build/badge.svg)](https://docs.rs/jerk-build/)  | Compile Java via [metabuild] / [build.rs] script
-| jerk-test     | [![Crates.io](https://img.shields.io/crates/v/jerk-test.svg)](https://crates.io/crates/jerk-test)   [![Docs](https://docs.rs/jerk-test/badge.svg)](https://docs.rs/jerk-test/)    | Unit test Java from Rust
+A library to enumerate / load JVM installations and libraries.
 
 ## License
 

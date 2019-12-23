@@ -39,7 +39,7 @@ use std::path::{Path, PathBuf};
 /// [build.rs]:             https://doc.rust-lang.org/cargo/reference/build-scripts.html
 /// [metabuild]:            https://github.com/rust-lang/rfcs/blob/master/text/2196-metabuild.md
 pub fn metabuild() {
-    let java_home   = search::find_java_home().expect("${JAVA_HOME} is not set and cannot be inferred");
+    let java_home = jerk::paths::java_home().unwrap();
     println!("rustc-env=JAVA_HOME={}", java_home.display());
     env::set_var("JAVA_HOME", &java_home);
 

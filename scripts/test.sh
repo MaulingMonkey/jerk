@@ -1,7 +1,3 @@
-export JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-8-openjdk-amd64}
-export PATH=${JAVA_HOME}/bin/:${PATH}
-export LIBRARY_PATH=${JAVA_HOME}/jre/lib/amd64/server/:${LIBRARY_PATH}
-export LD_LIBRARY_PATH=${JAVA_HOME}/jre/lib/amd64/server/:${LD_LIBRARY_PATH}
 export RUST_BACKTRACE=1
 
 function main {
@@ -19,7 +15,6 @@ function build {
 
 function test {
     export CLASSPATH=${ROOT}/target/debug/java/jars/example-hello-world-jar.jar
-    export PATH=${ROOT}/target/debug:${PATH}
     print_run cargo test --all || exit 1
 }
 

@@ -71,6 +71,7 @@ pub fn run_test(package: &str, class: &str, method: &str) -> Result<()> {
 }
 
 
+lazy_static::lazy_static! { static ref JVM : jerk::jvm::Library = jerk::jvm::Library::get().unwrap(); }
 
 /// Get a handle to the current Java VM, or create one if it doesn't already exist.
 pub fn test_vm() -> *mut JavaVM { **VM }
@@ -88,30 +89,13 @@ fn attach_current_thread() -> *mut JNIEnv {
 }
 
 fn create_java_vm() -> *mut JavaVM {
-    let mut vm  = 0 as *mut _;
-    let mut env = 0 as *mut _;
-
-    let classpath = format!("-Djava.class.path={}\0", std::env::var("CLASSPATH").unwrap());
-
-    let mut options = [
-        //JavaVMOption { optionString: "-verbose:class\0".as_ptr() as *const _ as *mut _, extraInfo: null_mut() },
-        //JavaVMOption { optionString: "-verbose:jni\0".as_ptr() as *const _ as *mut _, extraInfo: null_mut() },
-        JavaVMOption { optionString: "-ea\0".as_ptr() as *const _ as *mut _, extraInfo: null_mut() }, // Enable Assertions
-        JavaVMOption { optionString: "-esa\0".as_ptr() as *const _ as *mut _, extraInfo: null_mut() }, // Enable System Assertions
-        JavaVMOption { optionString: classpath.as_ptr() as *const _ as *mut _, extraInfo: null_mut() },
-    ];
-
-    let mut args = JavaVMInitArgs {
-        version:            JNI_VERSION_1_6,
-        nOptions:           options.len() as _,
-        options:            options.as_mut_ptr(),
-        ignoreUnrecognized: JNI_FALSE,
-    };
-
-    assert_eq!(JNI_OK, unsafe { JNI_GetDefaultJavaVMInitArgs(&mut args as *mut _ as *mut _) });
-    assert_eq!(JNI_OK, unsafe { JNI_CreateJavaVM(&mut vm, &mut env, &mut args as *mut _ as *mut _) });
-
-    vm
+    JVM.create_java_vm(vec![
+        //"-verbose:class".to_string(),
+        //"-verbose:jni".to_string(),
+        "-ea".to_string(),  // Enable Assertions
+        "-esa".to_string(), // Enable System Assertions
+        format!("-Djava.class.path={}", std::env::var("CLASSPATH").unwrap()),
+    ]).unwrap()
 }
 
 struct ThreadSafe<T>(pub T);
