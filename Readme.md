@@ -35,6 +35,80 @@ This is **not** an official project of Google, Oracle, Sun Microsystems, or anyo
 
 * Directly compete with Ant, Groovy, etc. as a fully fledged Java build tool.
 
+## Quick Start
+
+Add this to your [Cargo.toml](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/Cargo.toml#L10-L20):
+
+```toml
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+jni-sys     = "0.3"
+
+[build-dependencies]
+jerk-build  = "0.1.5"
+
+[dev-dependencies]
+jerk-test   = "0.1.5"
+```
+
+And this to your [build.rs](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/build.rs):
+
+```rust
+fn main() {
+    jerk_build::metabuild();
+}
+```
+
+You can then write Java ([src/Adder.java](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/src/Adder.java)) code:
+
+```java
+package com.maulingmonkey.jerk.example_hello_world_jar;
+public class Adder {
+    public native int add(int a, int b);
+    public static void test() {
+        System.loadLibrary("example_hello_world_jar");
+        assert adder.add(1, 2) == 3;
+    }
+}
+```
+
+...alongside your Rust ([src/Adder.rs](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/src/Adder.rs)) code:
+
+```rust
+use jni_sys::{JNIEnv, jobject, jint};
+#[no_mangle] pub extern "stdcall" fn Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Adder_add__II(_env: *mut JNIEnv, _this: jobject, a: jint, b: jint) -> jint {
+    a + b
+}
+#[test] fn test() -> Result<(), jerk_test::JavaTestError> {
+    jerk_test::run_test("com.maulingmonkey.jerk.example_hello_world_jar", "Adder", "test")
+}
+```
+
+...and then build and run the test!  **WARNING:** Just running `cargo test` won't build the dylib (#12)
+
+```
+C:\local\jerk>cargo b
+   Compiling example-hello-world-jar v0.0.0 (C:\local\jerk\example-hello-world-jar)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.69s                                                                                                                                                              
+
+C:\local\jerk>cargo t
+   Compiling example-hello-world-jar v0.0.0 (C:\local\jerk\example-hello-world-jar)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.70s                                                                                                                                                              
+     Running target\debug\deps\example_hello_world_jar-62ffe3d0e12a73e3.exe
+
+running 1 test
+test adder::test ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+     Running target\debug\deps\test-debf6fc82f53033a.exe
+
+running 1 test
+test test ... ok
+```
+
 ## Java <-> Rust Interop Pontificating
 
 Rust code may sanely depend on Java code to build, but not vicea versa:
