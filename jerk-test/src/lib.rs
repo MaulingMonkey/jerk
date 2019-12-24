@@ -4,7 +4,7 @@
 use jni_sys::*;
 use std::convert::*;
 use std::fmt::{self, Debug, Display, Formatter};
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 use std::ptr::null_mut;
 
 pub type Result<T> = std::result::Result<T, JavaTestError>;
@@ -95,21 +95,39 @@ fn create_java_vm() -> *mut JavaVM {
         //"-verbose:jni".to_string(),
         "-ea".to_string(),  // Enable Assertions
         "-esa".to_string(), // Enable System Assertions
-        format!("-Djava.class.path={profile_dir}/java/jars/{pkg_name}.jar", profile_dir=taget_profile_dir().display(), pkg_name=std::env::var("CARGO_PKG_NAME").unwrap()),
+        format!("-Djava.class.path={}", find_jar().display()),
     ]).unwrap()
 }
 
-fn taget_profile_dir() -> PathBuf {
-    let mut dir = jerk::paths::env("OUT_DIR").unwrap();
-    while !is_profile_dir(&dir) && dir.pop() {}
-    eprintln!("{}", dir.display());
-    dir
-}
+fn find_jar() -> PathBuf {
+    // We're assuming here that *our* profile is the same as the *test* profile.
+    // That's technically a bad assumption and likely to change in the future,
+    // if/when cargo gains support for mixing and matching different build
+    // profiles for different crates.  Or it'll even break *right now* if you
+    // manually specify rlibs yourself like some kind of madman.
+    // 
+    // It's also possible to override the output directory placing this jar
+    // elsewhere, but that's not an easily solved problem anyways.  OUT_DIR only
+    // gets set if you have a build.rs, which isn't guaranteed... although if
+    // the .jar is in this specific location, you probably have one that
+    // runs jerk_build::metabuild().
+    let relative = PathBuf::from(format!("target/{profile}/java/jars/{pkg_name}.jar", profile=env!("PROFILE"), pkg_name=std::env::var("CARGO_PKG_NAME").expect("CARGO_PKG_NAME not set or invalid unicode")));
 
-fn is_profile_dir(path: &Path) -> bool {
-    if path.parent().and_then(|p| p.file_name()).and_then(|n| n.to_str()) != Some("target") { return false; }
-    if !path.join("java").exists() { return false; }
-    true
+    // Okay, go actually find that jar.
+    let mut dir = std::env::current_dir().expect("Couldn't get current directory");
+    while !dir.join(&relative).exists() {
+        assert!(
+            dir.pop(),
+            concat!(
+                "Cannot find {jar}.  Possible causes:\n",
+                "  - You're not using jerk_build::metabuild() in your build.rs.\n",
+                "  - You've overridden the target/output directory.\n",
+                "  - You're running tests from a weird directory.\n",
+            ),
+            jar = relative.display()
+        );
+    }
+    dir.join(relative)
 }
 
 struct ThreadSafe<T>(pub T);
