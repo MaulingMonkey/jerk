@@ -86,7 +86,7 @@ use jni_sys::{JNIEnv, jobject, jint};
 }
 ```
 
-...and then build and run the test!  **WARNING:** Just running `cargo test` won't build the dylib (#12)
+...and then build and run the test!  **WARNING:** Just running `cargo test` won't build the dylib ([#12](https://github.com/MaulingMonkey/jerk/issues/12))
 
 ```
 C:\local\jerk>cargo b
