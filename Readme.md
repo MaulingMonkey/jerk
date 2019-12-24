@@ -1,8 +1,8 @@
 # **jerk**: **J**ava **E**mbedding **R**ust **K**it
 
 [![GitHub](https://img.shields.io/github/stars/MaulingMonkey/jerk.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/jerk)
-![unsafe: yes](https://img.shields.io/badge/unsafe-yes-yellow.svg)
-![rust: 1.36.0+](https://img.shields.io/badge/rust-1.36.0%2B-green.svg)
+[![unsafe: yes](https://img.shields.io/github/search/MaulingMonkey/jerk/unsafe%2bextension%3Ars?color=yellow&label=unsafe)](https://github.com/MaulingMonkey/jerk/search?q=unsafe+extension%3Ars)
+[![rust: 1.36.0+](https://img.shields.io/badge/rust-1.36.0%2B-green.svg)](https://gist.github.com/MaulingMonkey/c81a9f18811079f19326dac4daa5a359#minimum-supported-rust-versions-msrv)
 [![License](https://img.shields.io/crates/l/jerk.svg)](https://github.com/MaulingMonkey/jerk)
 
 Libraries to compile/embed/test Java alongside a Rust library/application.
