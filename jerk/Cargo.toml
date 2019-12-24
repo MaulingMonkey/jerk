@@ -25,3 +25,4 @@ nightly         = []
 dlopen          = "0.1"
 dlopen_derive   = "0.1"
 jni-sys         = "0.3"
+winapi          = { version = "0.3", features = ["winerror"] }

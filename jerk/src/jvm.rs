@@ -10,6 +10,7 @@ use std::path::{Path};
 use std::ptr::{null_mut};
 use dlopen::wrapper::{Container, WrapperApi};
 use jni_sys::*;
+#[cfg(windows)] use winapi::shared::winerror::*;
 
 /// Error loading a [Library]
 /// 
@@ -97,7 +98,24 @@ impl Library {
     #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn from_library_path(libjvm: &(impl AsRef<Path> + ?Sized)) -> Result<Library, LoadError> {
         let libjvm = libjvm.as_ref();
-        let jvm = unsafe { Container::load(libjvm) }?;
+        let jvm = unsafe { Container::load(libjvm) }
+            .map_err(|err| match err {
+                // "%1 is not a valid Win32 application." - likely caused by architecture mismatch
+                #[cfg(windows)] dlopen::Error::OpeningLibraryError(io) if io.kind() == io::ErrorKind::Other && io.raw_os_error() == Some(ERROR_BAD_EXE_FORMAT as _) => {
+                    dlopen::Error::OpeningLibraryError(io::Error::new(
+                        io::ErrorKind::Other,
+                        format!(
+                            concat!(
+                                "Unable to load {}: ERROR_BAD_EXE_FORMAT\r\n",
+                                "This is likely caused by trying to use 32-bit Java from a 64-bit Rust binary or vicea versa.\r\n",
+                                "This in turn is likely caused by not having a corresponding Java installation.\r\n"
+                            ),
+                            libjvm.display(),
+                        )
+                    ))
+                },
+                other => other,
+            })?;
         Ok(Self{jvm})
     }
 
