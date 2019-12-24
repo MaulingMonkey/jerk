@@ -3,6 +3,7 @@
 
 use jni_sys::*;
 use std::convert::*;
+use std::fs;
 use std::fmt::{self, Debug, Display, Formatter};
 use std::path::{PathBuf};
 use std::ptr::null_mut;
@@ -90,16 +91,29 @@ fn attach_current_thread() -> *mut JNIEnv {
 }
 
 fn create_java_vm() -> *mut JavaVM {
-    JVM.create_java_vm(vec![
+    let path_seperator = if cfg!(windows) { ";" } else { ":" };
+
+    let mut args = vec![
         //"-verbose:class".to_string(),
         //"-verbose:jni".to_string(),
         "-ea".to_string(),  // Enable Assertions
         "-esa".to_string(), // Enable System Assertions
-        format!("-Djava.class.path={}", find_jar().display()),
-    ]).unwrap()
+    ];
+
+    let class_path_prefix = "-Djava.class.path=";
+    let mut class_path = class_path_prefix.to_string();
+    for jar in fs::read_dir(find_jars_dir()).expect("Unable to find jars directory") {
+        let jar = if let Ok(e) = jar { e } else { continue };
+        class_path += &format!("{}{}", jar.path().display(), path_seperator);
+    }
+    if class_path.len() != class_path_prefix.len() {
+        args.push(class_path);
+    }
+
+    JVM.create_java_vm(args).unwrap()
 }
 
-fn find_jar() -> PathBuf {
+fn find_jars_dir() -> PathBuf {
     // We're assuming here that *our* profile is the same as the *test* profile.
     // That's technically a bad assumption and likely to change in the future,
     // if/when cargo gains support for mixing and matching different build
@@ -111,7 +125,7 @@ fn find_jar() -> PathBuf {
     // gets set if you have a build.rs, which isn't guaranteed... although if
     // the .jar is in this specific location, you probably have one that
     // runs jerk_build::metabuild().
-    let relative = PathBuf::from(format!("target/{profile}/java/jars/{pkg_name}.jar", profile=env!("PROFILE"), pkg_name=std::env::var("CARGO_PKG_NAME").expect("CARGO_PKG_NAME not set or invalid unicode")));
+    let relative = PathBuf::from(format!("target/{profile}/java/jars", profile=env!("PROFILE")));
 
     // Okay, go actually find that jar.
     let mut dir = std::env::current_dir().expect("Couldn't get current directory");
@@ -119,12 +133,12 @@ fn find_jar() -> PathBuf {
         assert!(
             dir.pop(),
             concat!(
-                "Cannot find {jar}.  Possible causes:\n",
+                "Cannot find {relative}.  Possible causes:\n",
                 "  - You're not using jerk_build::metabuild() in your build.rs.\n",
                 "  - You've overridden the target/output directory.\n",
                 "  - You're running tests from a weird directory.\n",
             ),
-            jar = relative.display()
+            relative = relative.display()
         );
     }
     dir.join(relative)
