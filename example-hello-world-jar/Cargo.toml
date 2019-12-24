@@ -6,7 +6,6 @@ version = "0.0.0"
 publish = false
 authors = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition = "2018"
-links   = "jvm"
 
 [lib]
 crate-type = ["cdylib"]
@@ -19,4 +18,3 @@ jerk-build  = { version = "0.1", path = "../jerk-build" }
 
 [dev-dependencies]
 jerk-test   = { version = "0.1", path = "../jerk-test" }
-lazy_static = "1.4"
