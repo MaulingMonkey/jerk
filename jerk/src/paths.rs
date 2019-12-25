@@ -68,28 +68,19 @@ pub fn android_sdk_root() -> Result<PathBuf, io::Error> {
 /// * bin\java.exe
 /// * bin\javac.exe
 /// * bin\javadoc.exe
-/// * bin\javah.exe
 /// 
 /// Expected unix contents:
 /// * bin/java
 /// * bin/javac
 /// * bin/javadoc
-/// * bin/javah
 /// 
 /// ```rust
 /// let java_home = jerk::paths::java_home().unwrap();
 /// let bin = java_home.join("bin");
-/// 
-/// if cfg!(windows) {
-///     assert!(bin.join("java.exe").exists());
-///     assert!(bin.join("javac.exe").exists());
-///     assert!(bin.join("javadoc.exe").exists());
-///     assert!(bin.join("javah.exe").exists());
-/// } else {
-///     assert!(bin.join("java").exists());
-///     assert!(bin.join("javac").exists());
-///     assert!(bin.join("javadoc").exists());
-///     assert!(bin.join("javah").exists());
+/// let tools = ["java", "javac", "javadoc"];
+/// for tool in tools.iter().copied() {
+///     #[cfg(windows)] let tool = format!("{}.exe", &tool);
+///     assert!(bin.join(&tool).exists(), "{} missing from bin: {}", tool, bin.display());
 /// }
 /// ```
 pub fn java_home() -> Result<PathBuf, io::Error> {
@@ -97,11 +88,24 @@ pub fn java_home() -> Result<PathBuf, io::Error> {
         Some(java_home)
     } else if cfg!(windows) {
         let WinPaths { program_files, program_files_x86, local_app_data: _ } = WinPaths::get();
-        None.or_else(|| if_exists_any(&program_files_x86.join(r"Java"), "jdk*"))
-            .or_else(|| if_exists_any(&program_files.join(r"Android\jdk"), "microsoft_disk_openjdk_*"))
-            .or_else(|| if_exists(program_files.join(r"Android\Android Studio\jre")))
+        let program_files_native = if cfg!(target_pointer_width = "64") { &program_files } else { &program_files_x86 };
+        None
+            .or_else(|| if_exists_any(&program_files_native.join(r"AdoptOpenJDK"), "jdk-*-hotspot"))    // https://adoptopenjdk.net/?variant=openjdk13&jvmVariant=hotspot
+            .or_else(|| if_exists_any(&program_files_native.join(r"Java"), "jdk*"))                     // Oracle Java - maching architecture
+            .or_else(|| if_exists_any(&program_files.join(r"Android\jdk"), "microsoft_disk_openjdk_*")) // XXX: These are 64-bit on 64-bit Windows, won't work for providing a JVM to 32-bit Rust binaries
+            .or_else(|| if_exists(program_files.join(r"Android\Android Studio\jre")))                   // XXX: These are 64-bit on 64-bit Windows, won't work for providing a JVM to 32-bit Rust binaries
     } else if cfg!(unix) {
-        if_exists_any("/usr/lib/jvm", "java-*-openjdk-amd64")
+        // See https://github.com/MaulingMonkey/jerk/wiki/Java-Sources#debian-packages
+        if      cfg!(target_arch = "x86_64")    { if_exists_any("/usr/lib/jvm", "java-*-openjdk-amd64"  ) }
+        else if cfg!(target_arch = "x86")       { if_exists_any("/usr/lib/jvm", "java-*-openjdk-i386"   ) }
+        else if cfg!(target_arch = "aarch64")   { if_exists_any("/usr/lib/jvm", "java-*-openjdk-arm64"  ) }
+        else if cfg!(target_arch = "arm") {
+            None.or_else(|| if_exists_any("/usr/lib/jvm", "java-*-openjdk-armhf")) // Hard Float.  Assume it's usable if available.
+                .or_else(|| if_exists_any("/usr/lib/jvm", "java-*-openjdk-armel")) // Soft Float or Vector Floating Point?
+        }
+        else {
+            None
+        }
     } else {
         None
     }
@@ -127,12 +131,28 @@ pub fn java_home() -> Result<PathBuf, io::Error> {
 pub fn libjvm_dir(java_home: &impl AsRef<Path>) -> Result<PathBuf, io::Error> {
     let java_home = java_home.as_ref();
     let libjvm = if cfg!(windows) { "jvm.dll" } else { "libjvm.so" };
+
     for path in [
-        // TODO: Make it possible to indicate preference instead of prioritizing client
+        // TODO: Make it possible to indicate preference instead of prioritizing client?
+
+        // Linux style arch-stamped packages
+        #[cfg(target_arch = "x86_64" )] "jre/lib/amd64/client",
+        #[cfg(target_arch = "x86_64" )] "jre/lib/amd64/server",
+        #[cfg(target_arch = "x86"    )] "jre/lib/i386/client",
+        #[cfg(target_arch = "x86"    )] "jre/lib/i386/server",
+        #[cfg(target_arch = "aarch64")] "jre/lib/aarch64/client",
+        #[cfg(target_arch = "aarch64")] "jre/lib/aarch64/server",
+        #[cfg(target_arch = "arm"    )] "jre/lib/arm/client",
+        #[cfg(target_arch = "arm"    )] "jre/lib/arm/server",
+
+        // Older Windows style JDKs (8) put jvm.dll inside jre/bin
         "jre/bin/client",
-        "jre/lib/amd64/client",
         "jre/bin/server",
-        "jre/lib/amd64/server"
+
+        // Newer Windows style JDKs (13) put jvm.dll inside bin directly
+        "bin/client",
+        "bin/server",
+
     ].iter().copied().map(|s| Path::new(s)) {
         let path = java_home.join(path);
         if path.join(libjvm).exists() {
@@ -157,6 +177,7 @@ fn for_each_dir<T>(dir: &Path, pattern: &str, on_dir: &mut impl FnMut(PathBuf, &
 
                 if name.starts_with(pre) && name.ends_with(post) {
                     let ver = &name[pre.len()..name.len()-post.len()];
+                    let ver = ver.trim_start_matches(|ch| ch == '-'); // Mixture of "jdk-13.0.1" and "jdk1.8.0_161" paths seen
                     if let Some(r) = on_dir(entry.path(), ver) {
                         return Some(r);
                     }

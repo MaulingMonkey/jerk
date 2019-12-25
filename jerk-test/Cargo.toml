@@ -2,7 +2,7 @@
 
 [package]
 name            = "jerk-test"
-version         = "0.1.5"
+version         = "0.1.6"
 authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition         = "2018"
 description     = "Java Embedding Rust Kit - Unit Testing"
@@ -22,6 +22,6 @@ default         = []
 nightly         = []
 
 [dependencies]
-jerk            = { version = "0.1.5", path = "../jerk" }
+jerk            = { version = "0.1.6", path = "../jerk" }
 jni-sys         = "0.3"
 lazy_static     = "1.4"

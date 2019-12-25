@@ -2,7 +2,7 @@
 
 [package]
 name            = "jerk"
-version         = "0.1.5"
+version         = "0.1.6"
 authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition         = "2018"
 description     = "Java Embedding Rust Kit - Common"
@@ -25,3 +25,4 @@ nightly         = []
 dlopen          = "0.1"
 dlopen_derive   = "0.1"
 jni-sys         = "0.3"
+winapi          = { version = "0.3", features = ["winerror"] }

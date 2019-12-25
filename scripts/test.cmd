@@ -1,21 +1,21 @@
 @pushd "%~dp0.." && setlocal
-@call :build
-@call :test
+
+cargo build --all --target=x86_64-pc-windows-msvc
+cargo test  --all --target=x86_64-pc-windows-msvc
+
+cargo build --all --target=i686-pc-windows-msvc
+cargo test  --all --target=i686-pc-windows-msvc
+
+@set RUSTUP_TOOLCHAIN=
 @call :doc "%~dp0..\jerk"
 @call :doc "%~dp0..\jerk-build"
 @call :doc "%~dp0..\jerk-test"
+
 @where wsl >NUL 2>NUL && wsl bash --login -c scripts/test.sh
+
 @popd && endlocal && goto :EOF
 
 
-
-:build
-cargo build --all
-@exit /b %ERRORLEVEL%
-
-:test
-cargo test --all
-@exit /b %ERRORLEVEL%
 
 :doc
 @pushd "%~1"
