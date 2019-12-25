@@ -1,10 +1,12 @@
 @pushd "%~dp0.." && setlocal
 
-cargo +stable-x86_64 build --all
-cargo +stable-x86_64 test  --all
+@set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.8.0_231
+cargo build --all --target=i686-pc-windows-msvc
+cargo test  --all --target=i686-pc-windows-msvc
 
-cargo +stable-i686 build --all
-cargo +stable-i686 test  --all
+@set JAVA_HOME=
+cargo build --all --target=x86_64-pc-windows-msvc
+cargo test  --all --target=x86_64-pc-windows-msvc
 
 @set RUSTUP_TOOLCHAIN=
 @call :doc "%~dp0..\jerk"
