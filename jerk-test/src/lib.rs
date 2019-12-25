@@ -57,7 +57,18 @@ pub fn run_test(package: &str, class: &str, method: &str) -> Result<()> {
     // * string IDs must be `\0` terminated
     unsafe {
         let class_id    = (**env).FindClass.unwrap()(env, class_id.as_ptr() as *const _);
-        assert_ne!(class_id, null_mut(), "Failed to FindClass {}.{} - the corresponding .jar may not be loaded", package, class);
+        assert_ne!(
+            class_id,
+            null_mut(),
+            concat!(
+                "Failed to FindClass {}.{}.  Possible causes:\n",
+                "  - Typos in the package or class name.\n",
+                "  - The corresponding .jar may have been built with a newer JDK (are you mixing old and new JDKs for 32-bit and 64-bit?)\n",
+                "  - The corresponding .jar may not be have been found (are you using `jerk_build::metabuild()` in your build.rs?)\n",
+            ),
+            package,
+            class
+        );
         let method_id   = (**env).GetStaticMethodID.unwrap()(env, class_id, method_id.as_ptr() as *const _, "()V\0".as_ptr() as *const _);
         assert_ne!(method_id, null_mut(), "Failed to GetStaticMethodID {}.{}", class, method);
         (**env).CallStaticVoidMethodA.unwrap()(env, class_id, method_id, [].as_ptr());

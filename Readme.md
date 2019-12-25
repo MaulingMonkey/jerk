@@ -37,6 +37,8 @@ This is **not** an official project of Google, Oracle, Sun Microsystems, or anyo
 
 ## Quick Start
 
+[Install the JDK](https://github.com/MaulingMonkey/jerk/wiki/Installing-the-JDK) if you haven't already.
+
 Add this to your [Cargo.toml](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/Cargo.toml#L10-L20):
 
 ```toml

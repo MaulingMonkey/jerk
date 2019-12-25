@@ -89,7 +89,9 @@ pub fn java_home() -> Result<PathBuf, io::Error> {
     } else if cfg!(windows) {
         let WinPaths { program_files, program_files_x86, local_app_data: _ } = WinPaths::get();
         let program_files_native = if cfg!(target_pointer_width = "64") { &program_files } else { &program_files_x86 };
-        None.or_else(|| if_exists_any(&program_files_native.join(r"Java"), "jdk*"))                     // Prioritize official Java install locations of matching architecture
+        None
+            .or_else(|| if_exists_any(&program_files_native.join(r"AdoptOpenJDK"), "jdk-*-hotspot"))    // https://adoptopenjdk.net/?variant=openjdk13&jvmVariant=hotspot
+            .or_else(|| if_exists_any(&program_files_native.join(r"Java"), "jdk*"))                     // Oracle Java - maching architecture
             .or_else(|| if_exists_any(&program_files.join(r"Android\jdk"), "microsoft_disk_openjdk_*")) // XXX: These are 64-bit on 64-bit Windows, won't work for providing a JVM to 32-bit Rust binaries
             .or_else(|| if_exists(program_files.join(r"Android\Android Studio\jre")))                   // XXX: These are 64-bit on 64-bit Windows, won't work for providing a JVM to 32-bit Rust binaries
     } else if cfg!(unix) {
