@@ -101,7 +101,7 @@ impl Library {
         let jvm = unsafe { Container::load(libjvm) }
             .map_err(|err| match err {
                 // "%1 is not a valid Win32 application." - likely caused by architecture mismatch
-                #[cfg(windows)] dlopen::Error::OpeningLibraryError(io) if io.kind() == io::ErrorKind::Other && io.raw_os_error() == Some(ERROR_BAD_EXE_FORMAT as _) => {
+                #[cfg(windows)] dlopen::Error::OpeningLibraryError(ref io) if io.kind() == io::ErrorKind::Other && io.raw_os_error() == Some(ERROR_BAD_EXE_FORMAT as _) => {
                     dlopen::Error::OpeningLibraryError(io::Error::new(
                         io::ErrorKind::Other,
                         format!(
