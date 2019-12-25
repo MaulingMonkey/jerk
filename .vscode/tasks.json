@@ -9,6 +9,7 @@
         { "group": "build", "label": "cargo clean", "command": "cargo clean" },
         { "label": "scripts\\publish --dry-run",    "command": "scripts\\publish --dry-run" },
         { "label": "scripts\\publish",              "command": "scripts\\publish", "options": { "env": { "DELAY": "10" } } },
+        { "label": "gitk",                          "command": "gitk master publish &" },
 
         // Links
         { "label": "Docs (local)",          "windows": { "command": "start \"\" target/doc/jerk/index.html"                     }, "presentation": { "panel": "shared", "reveal": "never", "group": "urls" } },
