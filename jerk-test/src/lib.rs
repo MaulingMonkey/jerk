@@ -101,13 +101,18 @@ fn attach_current_thread() -> *mut JNIEnv {
 }
 
 fn create_java_vm() -> *mut JavaVM {
+    // https://github.com/MaulingMonkey/jerk/issues/14
+    let jni_symbol_source = PathBuf::from(std::env::args_os().next().expect("Unable to determine test EXE"));
+
     JVM.create_java_vm(vec![
         //"-verbose:class".to_string(),
         //"-verbose:jni".to_string(),
         "-ea".to_string(),  // Enable Assertions
         "-esa".to_string(), // Enable System Assertions
         format!("-Djava.class.path={}", find_jar().display()),
+        format!("-Dcom.maulingmonkey.jerk_test.jni_symbols_source={}", jni_symbol_source.display()),
     ]).unwrap()
+
 }
 
 fn find_jar() -> PathBuf {

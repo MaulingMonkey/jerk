@@ -1,0 +1,6 @@
+LIBRARY
+EXPORTS
+    Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Adder_add__Ljava_lang_String_2Ljava_lang_String_2
+    Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Adder_add__FF
+    Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Adder_add__II
+    Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Global_assert_1native_1value__I

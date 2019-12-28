@@ -6,6 +6,7 @@ version = "0.0.0"
 publish = false
 authors = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition = "2018"
+autotests = false # https://github.com/MaulingMonkey/jerk/issues/15
 
 [lib]
 crate-type = ["cdylib"]

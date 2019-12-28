@@ -88,27 +88,17 @@ use jni_sys::{JNIEnv, jobject, jint};
 }
 ```
 
-...and then build and run the test!  **WARNING:** Just running `cargo test` won't build the dylib ([#12](https://github.com/MaulingMonkey/jerk/issues/12))
+...and then build and run the test!
 
 ```
-C:\local\jerk>cargo b
-   Compiling example-hello-world-jar v0.0.0 (C:\local\jerk\example-hello-world-jar)
-    Finished dev [unoptimized + debuginfo] target(s) in 1.69s                                                                                                                                                              
-
 C:\local\jerk>cargo t
-   Compiling example-hello-world-jar v0.0.0 (C:\local\jerk\example-hello-world-jar)
-    Finished dev [unoptimized + debuginfo] target(s) in 0.70s                                                                                                                                                              
-     Running target\debug\deps\example_hello_world_jar-62ffe3d0e12a73e3.exe
+    Finished dev [unoptimized + debuginfo] target(s) in 0.06s
+     Running target\debug\deps\example_hello_world_jar-2997df28c387b743.exe
 
-running 1 test
+running 1 tests
 test adder::test ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
-
-     Running target\debug\deps\test-debf6fc82f53033a.exe
-
-running 1 test
-test test ... ok
 ```
 
 ## Java <-> Rust Interop Pontificating
