@@ -14,14 +14,12 @@ license         = "MIT OR Apache-2.0"
 include         = ["/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
 readme          = "Readme.md"
 
-[package.metadata.docs.rs]
-features = ["nightly"]
-
 [features]
-default         = []
-nightly         = []
+default         = [] # XXX: These features do nothing now
+nightly         = [] # XXX: These features do nothing now
 
 [dependencies]
 jerk            = { version = "0.0.0", path = "../jerk" }
 bitflags        = "1.2"
 cargo_metadata  = "0.8"
+rustversion     = "1.0"

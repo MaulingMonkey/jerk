@@ -14,15 +14,13 @@ license         = "MIT OR Apache-2.0"
 include         = ["/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
 readme          = "Readme.md"
 
-[package.metadata.docs.rs]
-features = ["nightly"]
-
 [features]
-default         = []
-nightly         = []
+default         = [] # XXX: These features do nothing now
+nightly         = [] # XXX: These features do nothing now
 
 [dependencies]
 dlopen          = "0.1"
 dlopen_derive   = "0.1"
 jni-sys         = "0.3"
+rustversion     = "1.0"
 winapi          = { version = "0.3", features = ["winerror"] }

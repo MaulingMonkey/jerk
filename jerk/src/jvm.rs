@@ -72,7 +72,7 @@ impl Library {
     }
 
     /// Load a JVM library from wherever.
-    #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
+    #[rustversion::attr(nightly, doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn from_system() -> Result<Library, LoadError> {
         let java_home = paths::java_home()?;
         Self::from_java_home(&java_home)
@@ -83,7 +83,7 @@ impl Library {
     /// # Arguments
     /// 
     /// - `java_home` - this should be `%JAVA_HOME%` or similar.
-    #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
+    #[rustversion::attr(nightly, doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn from_java_home(java_home: &(impl AsRef<Path> + ?Sized)) -> Result<Library, LoadError> {
         let java_home = java_home.as_ref();
         let libjvm_dir = paths::libjvm_dir(&java_home)?;
@@ -95,7 +95,7 @@ impl Library {
     /// # Arguments
     /// 
     /// - `libjvm` - this should be a path to `jvm.dll` / `libjvm.so`
-    #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
+    #[rustversion::attr(nightly, doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn from_library_path(libjvm: &(impl AsRef<Path> + ?Sized)) -> Result<Library, LoadError> {
         let libjvm = libjvm.as_ref();
         let jvm = unsafe { Container::load(libjvm) }
@@ -120,7 +120,7 @@ impl Library {
     }
 
     /// `JNI_CreateJavaVM`
-    #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
+    #[rustversion::attr(nightly, doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn create_java_vm(&self, mut java_vm_options: Vec<String>) -> Result<*mut JavaVM, JniError> {
         for o in java_vm_options.iter_mut() {
             // XXX: Assert doesn't contain nul?  Escape to weird Java psuedo-UTF8 "nuls"?
@@ -173,7 +173,7 @@ impl Library {
     }
 
     /// `JNI_GetDefaultJavaVMInitArgs`
-    #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
+    #[rustversion::attr(nightly, doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn get_default_java_vm_init_args(&self) -> Result<JavaVMInitArgs, JniError> {
         let mut args : JavaVMInitArgs = JavaVMInitArgs { version: 0, nOptions: 0, options: null_mut(), ignoreUnrecognized: JNI_FALSE };
         let r = unsafe { self.jvm.JNI_GetDefaultJavaVMInitArgs(&mut args as *mut _ as *mut _) };

@@ -19,5 +19,5 @@ cargo test  --all --target=i686-pc-windows-msvc
 
 :doc
 @pushd "%~1"
-cargo +nightly doc --no-deps --features="nightly"
+cargo +nightly doc --no-deps
 @popd && exit /b %ERRORLEVEL%
