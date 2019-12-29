@@ -4,7 +4,7 @@
 use jni_sys::*;
 use std::convert::*;
 use std::fmt::{self, Debug, Display, Formatter};
-use std::path::{PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::ptr::null_mut;
 
 pub type Result<T> = std::result::Result<T, JavaTestError>;
@@ -102,7 +102,10 @@ fn attach_current_thread() -> *mut JNIEnv {
 
 fn create_java_vm() -> *mut JavaVM {
     // https://github.com/MaulingMonkey/jerk/issues/14
-    let jni_symbol_source = PathBuf::from(std::env::args_os().next().expect("Unable to determine test EXE"));
+    let jni_symbol_source = PathBuf::from(std::env::args_os()
+        .next().expect("Unable to determine test EXE"))
+        .canonicalize().expect("Unable to determine absolute path of test EXE") // System.load() requires an absolute path
+        .components().map(fix_drive_prefix).collect::<PathBuf>();               // System.load() cannot handle a "\\?\" prefix
 
     JVM.create_java_vm(vec![
         //"-verbose:class".to_string(),
@@ -144,6 +147,23 @@ fn find_jar() -> PathBuf {
         );
     }
     dir.join(relative)
+}
+
+fn fix_drive_prefix(c: Component) -> Component {
+    match c {
+        Component::Prefix(p) => {
+            if let Some(s) = p.as_os_str().to_str() {
+                if s.starts_with(r"\\?\") {
+                    Path::new(&s[4..]).components().next().unwrap_or(c)
+                } else {
+                    c
+                }
+            } else {
+                c
+            }
+        },
+        other => other,
+    }
 }
 
 struct ThreadSafe<T>(pub T);
