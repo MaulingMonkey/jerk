@@ -24,4 +24,4 @@ nightly         = []
 [dependencies]
 jerk            = { version = "0.0.0", path = "../jerk" }
 bitflags        = "1.2"
-cargo_metadata  = "0.8"
+cargo_metadata  = "0.9"
