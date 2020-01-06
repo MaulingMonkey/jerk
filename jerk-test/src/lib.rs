@@ -4,7 +4,7 @@
 use jni_sys::*;
 use std::convert::*;
 use std::fmt::{self, Debug, Display, Formatter};
-use std::path::{Component, Path, PathBuf};
+use std::path::PathBuf;
 use std::ptr::null_mut;
 
 pub type Result<T> = std::result::Result<T, JavaTestError>;
@@ -101,19 +101,12 @@ fn attach_current_thread() -> *mut JNIEnv {
 }
 
 fn create_java_vm() -> *mut JavaVM {
-    // https://github.com/MaulingMonkey/jerk/issues/14
-    let jni_symbol_source = PathBuf::from(std::env::args_os()
-        .next().expect("Unable to determine test EXE"))
-        .canonicalize().expect("Unable to determine absolute path of test EXE") // System.load() requires an absolute path
-        .components().map(fix_drive_prefix).collect::<PathBuf>();               // System.load() cannot handle a "\\?\" prefix
-
     JVM.create_java_vm(vec![
         //"-verbose:class".to_string(),
         //"-verbose:jni".to_string(),
         "-ea".to_string(),  // Enable Assertions
         "-esa".to_string(), // Enable System Assertions
         format!("-Djava.class.path={}", find_jar().display()),
-        format!("-Dcom.maulingmonkey.jerk_test.jni_symbols_source={}", jni_symbol_source.display()),
     ]).unwrap()
 
 }
@@ -131,7 +124,7 @@ fn find_jar() -> PathBuf {
     // the .jar is in this specific location, you probably have one that
     // runs jerk_build::metabuild().
     let relative = PathBuf::from(format!("target/{profile}/java/jars/{pkg_name}.jar", profile=env!("PROFILE"), pkg_name=std::env::var("CARGO_PKG_NAME").expect("CARGO_PKG_NAME not set or invalid unicode")));
-
+    
     // Okay, go actually find that jar.
     let mut dir = std::env::current_dir().expect("Couldn't get current directory");
     while !dir.join(&relative).exists() {
@@ -146,24 +139,8 @@ fn find_jar() -> PathBuf {
             jar = relative.display()
         );
     }
-    dir.join(relative)
-}
-
-fn fix_drive_prefix(c: Component) -> Component {
-    match c {
-        Component::Prefix(p) => {
-            if let Some(s) = p.as_os_str().to_str() {
-                if s.starts_with(r"\\?\") {
-                    Path::new(&s[4..]).components().next().unwrap_or(c)
-                } else {
-                    c
-                }
-            } else {
-                c
-            }
-        },
-        other => other,
-    }
+    dir.push(relative);
+    dir
 }
 
 struct ThreadSafe<T>(pub T);

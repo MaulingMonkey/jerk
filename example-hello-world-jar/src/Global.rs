@@ -13,7 +13,7 @@ static VALUE : AtomicI32 = AtomicI32::new(0);
 }
 
 
-#[test] fn test() -> Result<(), jerk_test::JavaTestError> {
+#[no_mangle] pub extern "stdcall" fn Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Global_test() {
     // https://github.com/MaulingMonkey/jerk/issues/12
     // 
     // Loading a separately build cdylib actually caused a whole second copy of
@@ -22,5 +22,4 @@ static VALUE : AtomicI32 = AtomicI32::new(0);
     VALUE.store(1, Ordering::SeqCst); jerk_test::run_test("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_1").unwrap();
     VALUE.store(3, Ordering::SeqCst); jerk_test::run_test("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_3").unwrap();
     VALUE.store(5, Ordering::SeqCst); jerk_test::run_test("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_5").unwrap();
-    Ok(())
 }
