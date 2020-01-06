@@ -14,7 +14,7 @@ Add the following to your executable's Cargo.toml:
 
 ```toml
 [dev-dependencies]
-jerk-test = "0.1"
+jerk-test = "0.2"
 ```
 
 TODO: Finish example

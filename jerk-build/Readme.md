@@ -15,7 +15,7 @@ Add the following to your executable's Cargo.toml:
 
 ```toml
 [build-dependencies]
-jerk-build = "0.1"
+jerk-build = "0.2"
 ```
 
 And the following to your [build.rs]:
@@ -36,7 +36,7 @@ cargo-features = ["metabuild"]
 metabuild = ["jerk_build"]
 
 [build-dependencies]
-jerk-build = "0.1"
+jerk-build = "0.2"
 ```
 
 ## License
