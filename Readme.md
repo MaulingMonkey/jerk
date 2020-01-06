@@ -49,10 +49,10 @@ crate-type = ["cdylib"]
 jni-sys     = "0.3"
 
 [build-dependencies]
-jerk-build  = "0.1.5"
+jerk-build  = "0.2"
 
 [dev-dependencies]
-jerk-test   = "0.1.5"
+jerk-test   = "0.2"
 ```
 
 And this to your [build.rs](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/build.rs):
@@ -83,8 +83,8 @@ use jni_sys::{JNIEnv, jobject, jint};
 #[no_mangle] pub extern "stdcall" fn Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Adder_add__II(_env: *mut JNIEnv, _this: jobject, a: jint, b: jint) -> jint {
     a + b
 }
-#[test] fn test() -> Result<(), jerk_test::JavaTestError> {
-    jerk_test::run_test("com.maulingmonkey.jerk.example_hello_world_jar", "Adder", "test")
+#[test] fn test() {
+    jerk_test::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Adder", "test")
 }
 ```
 

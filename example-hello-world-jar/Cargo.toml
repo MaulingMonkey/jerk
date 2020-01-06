@@ -12,10 +12,10 @@ crate-type = ["dylib"]
 
 [dependencies]
 jni-sys     = "0.3"
-jerk-test   = { version = "0.1", path = "../jerk-test" }
+jerk-test   = { version = "0.2.0-git", path = "../jerk-test" }
 
 [build-dependencies]
-jerk-build  = { version = "0.1", path = "../jerk-build" }
+jerk-build  = { version = "0.2.0-git", path = "../jerk-build" }
 
 [dev-dependencies]
-jerk-test   = { version = "0.1", path = "../jerk-test" }
+jerk-test   = { version = "0.2.0-git", path = "../jerk-test" }

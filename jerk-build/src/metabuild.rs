@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 /// 
 /// ```toml
 /// [build-dependencies]
-/// jerk = "0.1"
+/// jerk = "0.2"
 /// ```
 /// 
 /// And the following to your [build.rs]:
@@ -33,7 +33,7 @@ use std::path::{Path, PathBuf};
 /// metabuild = ["jerk"]
 /// 
 /// [build-dependencies]
-/// jerk = "0.1"
+/// jerk = "0.2"
 /// ```
 /// 
 /// [build.rs]:             https://doc.rust-lang.org/cargo/reference/build-scripts.html
