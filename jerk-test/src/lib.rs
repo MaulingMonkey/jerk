@@ -4,8 +4,8 @@
 use jni_sys::*;
 use std::convert::*;
 use std::fmt::{self, Debug, Display, Formatter};
-use std::path::PathBuf;
 use std::ptr::null_mut;
+use std::sync::Mutex;
 
 pub type Result<T> = std::result::Result<T, JavaTestError>;
 
@@ -45,7 +45,21 @@ impl From<String> for JavaTestError {
 
 
 /// Execute a Java unit test.  The method must be static, return void, and take no arguments.
-pub fn run_test(package: &str, class: &str, method: &str) -> Result<()> {
+#[macro_export] macro_rules! run_test {
+    ( $package:expr, $class:expr, $method:expr ) => {{
+        $crate::run_test_impl(env!("JERK_BUILD_JAR"), $package, $class, $method).unwrap()
+    }};
+}
+
+#[doc(hidden)]
+pub fn run_test_impl(jar: &str, package: &str, class: &str, method: &str) -> Result<()> {
+    {
+        let mut vm = VM.lock().unwrap();
+        if vm.is_null() {
+            **vm = create_java_vm(jar);
+        }
+    }
+
     let env = test_thread_env();
     if env == null_mut() { return Err("Couldn't initialize Java VM".into()); }
     
@@ -86,8 +100,12 @@ pub fn run_test(package: &str, class: &str, method: &str) -> Result<()> {
 lazy_static::lazy_static! { static ref JVM : jerk::jvm::Library = jerk::jvm::Library::get().unwrap(); }
 
 /// Get a handle to the current Java VM, or create one if it doesn't already exist.
-pub fn test_vm() -> *mut JavaVM { **VM }
-lazy_static::lazy_static! { static ref VM : ThreadSafe<*mut JavaVM> = ThreadSafe(create_java_vm()); }
+pub fn test_vm() -> *mut JavaVM {
+    let vm = **VM.lock().unwrap();
+    debug_assert!(!vm.is_null(), "VM is null, are you trying to access the test_vm outside of a `run_test!`?");
+    vm
+}
+lazy_static::lazy_static! { static ref VM : Mutex<ThreadSafe<*mut JavaVM>> = Mutex::new(ThreadSafe(null_mut())); }
 
 /// Get a handle to the Java environment for the current thread, attaching if one doesn't already exist.
 pub fn test_thread_env() -> *mut JNIEnv { ENV.with(|e| *e) }
@@ -100,50 +118,19 @@ fn attach_current_thread() -> *mut JNIEnv {
     env as *mut _
 }
 
-fn create_java_vm() -> *mut JavaVM {
+fn create_java_vm(jar: &str) -> *mut JavaVM {
     JVM.create_java_vm(vec![
         //"-verbose:class".to_string(),
         //"-verbose:jni".to_string(),
         "-ea".to_string(),  // Enable Assertions
         "-esa".to_string(), // Enable System Assertions
-        format!("-Djava.class.path={}", find_jar().display()),
+        format!("-Djava.class.path={}", jar),
     ]).unwrap()
 
 }
 
-fn find_jar() -> PathBuf {
-    // We're assuming here that *our* profile is the same as the *test* profile.
-    // That's technically a bad assumption and likely to change in the future,
-    // if/when cargo gains support for mixing and matching different build
-    // profiles for different crates.  Or it'll even break *right now* if you
-    // manually specify rlibs yourself like some kind of madman.
-    // 
-    // It's also possible to override the output directory placing this jar
-    // elsewhere, but that's not an easily solved problem anyways.  OUT_DIR only
-    // gets set if you have a build.rs, which isn't guaranteed... although if
-    // the .jar is in this specific location, you probably have one that
-    // runs jerk_build::metabuild().
-    let relative = PathBuf::from(format!("target/{profile}/java/jars/{pkg_name}.jar", profile=env!("PROFILE"), pkg_name=std::env::var("CARGO_PKG_NAME").expect("CARGO_PKG_NAME not set or invalid unicode")));
-    
-    // Okay, go actually find that jar.
-    let mut dir = std::env::current_dir().expect("Couldn't get current directory");
-    while !dir.join(&relative).exists() {
-        assert!(
-            dir.pop(),
-            concat!(
-                "Cannot find {jar}.  Possible causes:\n",
-                "  - You're not using jerk_build::metabuild() in your build.rs.\n",
-                "  - You've overridden the target/output directory.\n",
-                "  - You're running tests from a weird directory.\n",
-            ),
-            jar = relative.display()
-        );
-    }
-    dir.push(relative);
-    dir
-}
-
 struct ThreadSafe<T>(pub T);
 impl<T> std::ops::Deref for ThreadSafe<T> { type Target = T; fn deref(&self) -> &Self::Target { &self.0 } }
+impl<T> std::ops::DerefMut for ThreadSafe<T> { fn deref_mut(&mut self) -> &mut Self::Target { &mut self.0 } }
 unsafe impl<T> Send for ThreadSafe<T> {}
 unsafe impl<T> Sync for ThreadSafe<T> {}

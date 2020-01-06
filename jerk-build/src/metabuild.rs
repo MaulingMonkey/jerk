@@ -43,15 +43,9 @@ pub fn metabuild() {
     println!("rustc-env=JAVA_HOME={}", java_home.display());
     env::set_var("JAVA_HOME", &java_home);
 
-    println!("cargo:rustc-link-lib=jvm");
-    println!("cargo:rustc-link-search=native={}", java_home.join("lib").display());
-    println!("cargo:rustc-link-search=native={}", java_home.join("jre/lib/amd64/server").display());
-
-    //let cwd           = env::current_dir().unwrap();
-    let metadata        = cargo_metadata::MetadataCommand::new().exec().expect("cargo-metadata failed");
     let profile         = env::var("PROFILE").expect("${PROFILE} is not set or is invalid Unicode");
     let package_name    = env::var("CARGO_PKG_NAME").expect("${CARGO_PKG_NAME} is not set or is invalid Unicode");
-    //let out_dir       = env::var_path("OUT_DIR").expect("${OUT_DIR} is not set or is invalid Unicode");
+    let out_dir         = env::var_path("OUT_DIR").expect("${OUT_DIR} is not set or is invalid Unicode");
 
     let debug_info = match profile.as_str() {
         "debug"     => Some(javac::DebugInfo::ALL),
@@ -59,7 +53,7 @@ pub fn metabuild() {
         _custom     => None,
     };
 
-    let out_java = metadata.target_directory.join(profile).join("java");
+    let out_java    = out_dir.join("java");
     let out_classes = out_java.join("classes");
     let out_sources = out_java.join("source" );
     let out_headers = out_java.join("headers");
@@ -70,6 +64,8 @@ pub fn metabuild() {
     let _ = fs::create_dir(&out_sources);
     let _ = fs::create_dir(&out_headers);
     let _ = fs::create_dir(&out_jars);
+
+    println!("cargo:rustc-env=JERK_BUILD_JAR={}", out_jar.display());
 
     let mut files = Vec::new();
     find_java_srcs(Path::new("."), &mut files).unwrap_or_else(|err| panic!("Failed to enumerate/read Java source code: {}", err));
