@@ -2,7 +2,7 @@
 
 [package]
 name            = "jerk"
-version         = "0.0.0"
+version         = "0.2.0-git"
 authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition         = "2018"
 description     = "Java Embedding Rust Kit - Common"

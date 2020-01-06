@@ -2,7 +2,7 @@
 
 [package]
 name = "example-hello-world-jar"
-version = "0.0.0"
+version = "0.0.0-git"
 publish = false
 authors = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition = "2018"
