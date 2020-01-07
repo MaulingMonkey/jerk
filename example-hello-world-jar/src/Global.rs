@@ -19,7 +19,7 @@ static VALUE : AtomicI32 = AtomicI32::new(0);
     // Loading a separately build cdylib actually caused a whole second copy of
     // the entire crate to be loaded with it's own separate static vars and
     // everything.  This test would catch that.
-    VALUE.store(1, Ordering::SeqCst); jerk_test::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_1");
-    VALUE.store(3, Ordering::SeqCst); jerk_test::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_3");
-    VALUE.store(5, Ordering::SeqCst); jerk_test::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_5");
+    VALUE.store(1, Ordering::SeqCst); jerk::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_1");
+    VALUE.store(3, Ordering::SeqCst); jerk::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_3");
+    VALUE.store(5, Ordering::SeqCst); jerk::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Global", "assert_value_eq_5");
 }
