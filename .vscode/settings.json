@@ -1,5 +1,7 @@
 {
     "files.exclude": {
         "target/*/*":   true, // Lots of contents
+        "jerk-build/*": true, // Deprecated
+        "jerk-test/*":  true, // Deprecated
     }
 }

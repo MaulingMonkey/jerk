@@ -1,5 +1,7 @@
 # **jerk**: **J**ava **E**mbedding **R**ust **K**it
 
+[![Crates.io](https://img.shields.io/crates/v/jerk.svg)](https://crates.io/crates/jerk)
+[![Docs](https://docs.rs/jerk/badge.svg)](https://docs.rs/jerk/)
 [![GitHub](https://img.shields.io/github/stars/MaulingMonkey/jerk.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/jerk)
 [![unsafe: yes](https://img.shields.io/github/search/MaulingMonkey/jerk/unsafe%2bextension%3Ars?color=yellow&label=unsafe)](https://github.com/MaulingMonkey/jerk/search?q=unsafe+extension%3Ars)
 [![rust: 1.36.0+](https://img.shields.io/badge/rust-1.36.0%2B-green.svg)](https://gist.github.com/MaulingMonkey/c81a9f18811079f19326dac4daa5a359#minimum-supported-rust-versions-msrv)
@@ -9,11 +11,6 @@ Libraries to compile/embed/test Java alongside a Rust library/application.
 Similar to [cc], but for Java.
 This is **not** an official project of Google, Oracle, Sun Microsystems, or anyone else.
 
-| Crate         | Badges | Notes |
-| ------------- | ------ | ----- |
-| [jerk](https://github.com/MaulingMonkey/jerk/tree/master/jerk)                | [![Crates.io](https://img.shields.io/crates/v/jerk.svg)](https://crates.io/crates/jerk)             [![Docs](https://docs.rs/jerk/badge.svg)](https://docs.rs/jerk/)              | Find Java paths, manage the JVM
-| [jerk-build](https://github.com/MaulingMonkey/jerk/tree/master/jerk-build)    | [![Crates.io](https://img.shields.io/crates/v/jerk-build.svg)](https://crates.io/crates/jerk-build) [![Docs](https://docs.rs/jerk-build/badge.svg)](https://docs.rs/jerk-build/)  | Compile Java via [metabuild] / [build.rs] script
-| [jerk-test](https://github.com/MaulingMonkey/jerk/tree/master/jerk-test)      | [![Crates.io](https://img.shields.io/crates/v/jerk-test.svg)](https://crates.io/crates/jerk-test)   [![Docs](https://docs.rs/jerk-test/badge.svg)](https://docs.rs/jerk-test/)    | Unit test Java from Rust
 
 | Branch | Badges | Notes |
 | ------ | ------ | ----- |
@@ -43,23 +40,23 @@ Add this to your [Cargo.toml](https://github.com/MaulingMonkey/jerk/blob/master/
 
 ```toml
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["dylib"]
 
 [dependencies]
 jni-sys     = "0.3"
 
 [build-dependencies]
-jerk-build  = "0.2"
+jerk        = "0.2"
 
 [dev-dependencies]
-jerk-test   = "0.2"
+jerk        = "0.2"
 ```
 
 And this to your [build.rs](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/build.rs):
 
 ```rust
 fn main() {
-    jerk_build::metabuild();
+    jerk::metabuild();
 }
 ```
 
@@ -83,14 +80,20 @@ use jni_sys::{JNIEnv, jobject, jint};
 #[no_mangle] pub extern "stdcall" fn Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Adder_add__II(_env: *mut JNIEnv, _this: jobject, a: jint, b: jint) -> jint {
     a + b
 }
+```
+
+...and write Java integration tests ([tests/test.rs](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/tests/test.rs)):
+
+```rust
+extern crate example_hello_world_jar; // force dylib to build
 #[test] fn test() {
-    jerk_test::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Adder", "test")
+    jerk::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Adder", "test");
 }
 ```
 
 ...and then build and run the test!
 
-```
+```text
 C:\local\jerk>cargo t
     Finished dev [unoptimized + debuginfo] target(s) in 0.06s
      Running target\debug\deps\example_hello_world_jar-2997df28c387b743.exe

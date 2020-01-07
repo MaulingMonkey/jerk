@@ -5,11 +5,11 @@ name            = "jerk-test"
 version         = "0.2.0-git"
 authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition         = "2018"
-description     = "Java Embedding Rust Kit - Unit Testing"
+description     = "Merged into jerk"
 documentation   = "https://docs.rs/jerk-test/"
 repository      = "https://github.com/MaulingMonkey/jerk"
-keywords        = ["java", "jvm", "test"]
-categories      = ["development-tools::testing"]
+keywords        = []
+categories      = []
 license         = "MIT OR Apache-2.0"
 include         = ["/**/*.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
 readme          = "Readme.md"
@@ -17,11 +17,12 @@ readme          = "Readme.md"
 [package.metadata.docs.rs]
 features = ["nightly"]
 
+[badges]
+maintenance = { status = "deprecated" }
+
 [features]
 default         = []
-nightly         = []
+nightly         = ["jerk/nightly"]
 
 [dependencies]
-jerk            = { version = "0.2.0-git", path = "../jerk" }
-jni-sys         = "0.3"
-lazy_static     = "1.4"
+jerk            = { version = "0.2.0-git", path = ".." }
