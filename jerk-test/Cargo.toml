@@ -2,7 +2,7 @@
 
 [package]
 name            = "jerk-test"
-version         = "0.2.0-git"
+version         = "0.2.1"
 authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition         = "2018"
 description     = "Merged into jerk"
@@ -25,4 +25,4 @@ default         = []
 nightly         = ["jerk/nightly"]
 
 [dependencies]
-jerk            = { version = "0.2.0-git", path = ".." }
+jerk            = { version = "0.2.1", path = ".." }
