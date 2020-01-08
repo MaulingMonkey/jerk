@@ -11,15 +11,11 @@ use std::ptr::*;
 use jni_sys::*;
 #[cfg(unix)]    use libc::*;
 
-#[cfg(windows)] use win::*;
-#[cfg(windows)] mod win {
-    use std::os::raw::*;
-    pub const ERROR_BAD_EXE_FORMAT : u32 = 0x00C1;
-    extern "system" {
-        pub fn GetModuleHandleA(lpModuleName: *const i8) -> *mut c_void;
-        pub fn GetProcAddress(hModule: *mut c_void, lpProcName: *const i8) -> *mut c_void;
-        pub fn LoadLibraryW(lpFileName: *const u16) -> *mut c_void;
-    }
+#[cfg(windows)] pub const ERROR_BAD_EXE_FORMAT : u32 = 0x00C1;
+#[cfg(windows)] extern "system" {
+    pub fn GetModuleHandleA(lpModuleName: *const i8) -> *mut c_void;
+    pub fn GetProcAddress(hModule: *mut c_void, lpProcName: *const i8) -> *mut c_void;
+    pub fn LoadLibraryW(lpFileName: *const u16) -> *mut c_void;
 }
 
 /// Error loading a [Library]
