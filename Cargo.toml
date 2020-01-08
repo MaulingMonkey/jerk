@@ -2,8 +2,40 @@
 
 [workspace]
 members = [
+    ".",
     "example-hello-world-jar",
-    "jerk",
     "jerk-build",
     "jerk-test",
 ]
+
+[package]
+name            = "jerk"
+version         = "0.2.1"
+authors         = ["MaulingMonkey <git@maulingmonkey.com>"]
+edition         = "2018"
+description     = "Java Embedding Rust Kit"
+documentation   = "https://docs.rs/jerk/"
+repository      = "https://github.com/MaulingMonkey/jerk"
+keywords        = ["java", "jvm", "test", "build", "metabuild"]
+categories      = ["development-tools::build-utils", "development-tools::testing"]
+license         = "MIT OR Apache-2.0"
+include         = ["/src/**/*.rs", "build.rs", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
+readme          = "Readme.md"
+
+[package.metadata.docs.rs]
+features = ["nightly"]
+
+[badges]
+maintenance = { status = "experimental" }
+
+[features]
+default         = []
+nightly         = []
+
+[dependencies]
+bitflags        = "1.2"
+jni-sys         = "0.3"
+lazy_static     = "1.4"
+
+[target.'cfg(unix)'.dependencies]
+libc            = "0.2.66"

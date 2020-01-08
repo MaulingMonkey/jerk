@@ -18,7 +18,7 @@ use std::path::{Path, PathBuf};
 /// And the following to your [build.rs]:
 /// ```no_run
 /// fn main() {
-///     jerk_build::metabuild();
+///     jerk::metabuild();
 /// }
 /// ```
 /// 
@@ -39,7 +39,7 @@ use std::path::{Path, PathBuf};
 /// [build.rs]:             https://doc.rust-lang.org/cargo/reference/build-scripts.html
 /// [metabuild]:            https://github.com/rust-lang/rfcs/blob/master/text/2196-metabuild.md
 pub fn metabuild() {
-    let java_home = jerk::paths::java_home().unwrap();
+    let java_home = paths::java_home().unwrap();
     println!("rustc-env=JAVA_HOME={}", java_home.display());
     env::set_var("JAVA_HOME", &java_home);
 

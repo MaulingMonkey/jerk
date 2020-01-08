@@ -2,7 +2,7 @@
 
 [package]
 name = "example-hello-world-jar"
-version = "0.0.0"
+version = "0.0.0-git"
 publish = false
 authors = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition = "2018"
@@ -12,10 +12,7 @@ crate-type = ["dylib"]
 
 [dependencies]
 jni-sys     = "0.3"
-jerk-test   = { version = "0.2", path = "../jerk-test" }
+jerk        = { version = "0.2.1", path = ".." }
 
 [build-dependencies]
-jerk-build  = { version = "0.2", path = "../jerk-build" }
-
-[dev-dependencies]
-jerk-test   = { version = "0.2", path = "../jerk-test" }
+jerk        = { version = "0.2.1", path = ".." }
