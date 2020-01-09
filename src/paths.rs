@@ -5,6 +5,7 @@
 
 
 
+use crate::Arch;
 use std::convert::AsRef;
 use std::fs;
 use std::io;
@@ -129,21 +130,28 @@ pub fn java_home() -> Result<PathBuf, io::Error> {
 /// }
 /// ```
 pub fn libjvm_dir(java_home: &impl AsRef<Path>) -> Result<PathBuf, io::Error> {
+    libjvm_dir_for_arch(java_home, Arch::Host)
+}
+
+pub fn libjvm_dir_for_arch(java_home: &impl AsRef<Path>, arch: Arch) -> Result<PathBuf, io::Error> {
     let java_home = java_home.as_ref();
     let libjvm = if cfg!(windows) { "jvm.dll" } else { "libjvm.so" };
 
-    for path in [
-        // TODO: Make it possible to indicate preference instead of prioritizing client?
+    // Linux style arch-stamped packages
+    let (jre_lib_arch_client, jre_lib_arch_server) = match arch {
+        Arch::X86_64            => ("jre/lib/amd64/client",     "jre/lib/amd64/server"  ),
+        Arch::X86               => ("jre/lib/i386/client",      "jre/lib/i386/server"   ),
+        Arch::AArch64           => ("jre/lib/aarch64/client",   "jre/lib/aarch64/server"),
+        Arch::ARM               => ("jre/lib/arm/client",       "jre/lib/arm/server"    ),
+        Arch::_non_exhaustive   => panic!("Arch::_non_exhaustive"),
+    };
 
+    // TODO: Make it possible to indicate client or server preference?
+
+    for path in [
         // Linux style arch-stamped packages
-        #[cfg(target_arch = "x86_64" )] "jre/lib/amd64/client",
-        #[cfg(target_arch = "x86_64" )] "jre/lib/amd64/server",
-        #[cfg(target_arch = "x86"    )] "jre/lib/i386/client",
-        #[cfg(target_arch = "x86"    )] "jre/lib/i386/server",
-        #[cfg(target_arch = "aarch64")] "jre/lib/aarch64/client",
-        #[cfg(target_arch = "aarch64")] "jre/lib/aarch64/server",
-        #[cfg(target_arch = "arm"    )] "jre/lib/arm/client",
-        #[cfg(target_arch = "arm"    )] "jre/lib/arm/server",
+        jre_lib_arch_client,
+        jre_lib_arch_server,
 
         // Older Windows style JDKs (8) put jvm.dll inside jre/bin
         "jre/bin/client",
