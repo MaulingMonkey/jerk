@@ -40,7 +40,8 @@ use std::path::{Path, PathBuf};
 /// [metabuild]:            https://github.com/rust-lang/rfcs/blob/master/text/2196-metabuild.md
 pub fn metabuild() {
     let java_home = paths::java_home().unwrap();
-    println!("rustc-env=JAVA_HOME={}", java_home.display());
+    println!("cargo:rerun-if-env-changed=JAVA_HOME");
+    println!("cargo:rustc-env=JAVA_HOME={}", java_home.display());
     env::set_var("JAVA_HOME", &java_home);
 
     let profile         = env::var("PROFILE").expect("${PROFILE} is not set or is invalid Unicode");
@@ -53,24 +54,40 @@ pub fn metabuild() {
         _custom     => None,
     };
 
+    let mut files = Vec::new();
+    find_java_srcs(Path::new("."), &mut files).unwrap_or_else(|err| panic!("Failed to enumerate/read Java source code: {}", err));
+    // This is a very limited and kinda poor heuristic for detecting entry points.  https://github.com/MaulingMonkey/jerk/issues/18
+    let entry_point = if files.iter().find(|p| p.file_name() == Some(std::ffi::OsStr::new("Main.java"))).is_some() { Some(String::from("Main")) } else { None };
+
     let out_java    = out_dir.join("java");
     let out_classes = out_java.join("classes");
     let out_sources = out_java.join("source" );
     let out_headers = out_java.join("headers");
     let out_jars    = out_java.join("jars");
-    let out_jar     = out_jars.join(format!("{}.jar", package_name));
+
+    let mut path;
+    let out_jar = if entry_point.is_none() {
+        &out_jars
+    } else {
+        path = out_dir.clone();
+        let ok =
+            path.file_name().and_then(|s| s.to_str()).map_or(false, |n| n == "out")                     && path.pop() &&
+            path.file_name().and_then(|s| s.to_str()).map_or(false, |n| n.starts_with(&package_name))   && path.pop() &&
+            path.file_name().and_then(|s| s.to_str()).map_or(false, |n| n == "build")                   && path.pop();
+
+        if ok {
+            &path
+        } else {
+            println!("cargo:warning=Expected OUT_DIR {:?} to end with build/{}-.../out", out_dir, package_name);
+            &out_jars
+        }
+    }.join(format!("{}.jar", package_name));
+
     let _ = fs::create_dir_all(&out_java);
     let _ = fs::create_dir(&out_classes);
     let _ = fs::create_dir(&out_sources);
     let _ = fs::create_dir(&out_headers);
     let _ = fs::create_dir(&out_jars);
-
-    println!("cargo:rustc-env=JERK_BUILD_JAR={}", out_jar.display());
-
-    let mut files = Vec::new();
-    find_java_srcs(Path::new("."), &mut files).unwrap_or_else(|err| panic!("Failed to enumerate/read Java source code: {}", err));
-    // This is a very limited and kinda poor heuristic for detecting entry points.  https://github.com/MaulingMonkey/jerk/issues/18
-    let entry_point = if files.iter().find(|p| p.file_name() == Some(std::ffi::OsStr::new("Main.java"))).is_some() { Some(String::from("Main")) } else { None };
 
     javac::Compile {
         java_home: Some(java_home.clone()),
@@ -89,6 +106,8 @@ pub fn metabuild() {
         files:          &[(out_classes.as_ref(), &[".".as_ref()][..])][..],
         ..jar::Archive::default()
     }.create().unwrap();
+
+    println!("cargo:rustc-env=JERK_BUILD_JAR={}", out_jar.display());
 }
 
 fn find_java_srcs(path: &Path, files: &mut Vec<PathBuf>) -> io::Result<()> {
