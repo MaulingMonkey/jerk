@@ -69,6 +69,8 @@ pub fn metabuild() {
 
     let mut files = Vec::new();
     find_java_srcs(Path::new("."), &mut files).unwrap_or_else(|err| panic!("Failed to enumerate/read Java source code: {}", err));
+    // This is a very limited and kinda poor heuristic for detecting entry points.  https://github.com/MaulingMonkey/jerk/issues/18
+    let entry_point = if files.iter().find(|p| p.file_name() == Some(std::ffi::OsStr::new("Main.java"))).is_some() { Some(String::from("Main")) } else { None };
 
     javac::Compile {
         java_home: Some(java_home.clone()),
@@ -81,11 +83,10 @@ pub fn metabuild() {
     }.exec().unwrap();
 
     jar::Archive {
-        java_home: Some(java_home.as_ref()),
-        jar_file:   Some(out_jar.as_ref()),
-        files:&[
-            (out_classes.as_ref(), &[".".as_ref()][..]),
-        ][..],
+        entry_point,
+        java_home:      Some(java_home.as_ref()),
+        jar_file:       Some(out_jar.as_ref()),
+        files:          &[(out_classes.as_ref(), &[".".as_ref()][..])][..],
         ..jar::Archive::default()
     }.create().unwrap();
 }
