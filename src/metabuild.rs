@@ -111,6 +111,7 @@ pub fn metabuild() {
 }
 
 fn find_java_srcs(path: &Path, files: &mut Vec<PathBuf>) -> io::Result<()> {
+    println!("cargo:rerun-if-changed={}", path.display()); // rerun if directory might add/remove source files
     for entry in fs::read_dir(path)? {
         let entry = entry?;
         let path = entry.path();
@@ -121,6 +122,7 @@ fn find_java_srcs(path: &Path, files: &mut Vec<PathBuf>) -> io::Result<()> {
         if path.is_dir() {
             find_java_srcs(&path, files)?;
         } else if name_lossy.get(name_lossy.len()-DOT_JAVA.len()..).map(|ext| ext.eq_ignore_ascii_case(DOT_JAVA)).unwrap_or(false) {
+            println!("cargo:rerun-if-changed={}", path.display()); // rerun if source file changed
             files.push(path);
         }
     }
