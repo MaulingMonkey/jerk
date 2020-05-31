@@ -112,10 +112,33 @@ pub fn java_home() -> Result<PathBuf, io::Error> {
     .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "JAVA_HOME not set and no Java installation could be found"))
 }
 
+/// Return platform specific path for libjvm
+///
+/// ```rust
+/// let lib_name = jerk::paths::libjvm_name();
+/// if cfg!(windows) {
+///     assert!(lib_name == "jvm.dll");
+/// } else if cfg!(target_os = "macos") {
+///     assert!(lib_name == "libjvm.dylib");
+/// } else {
+///     assert!(lib_name == "libjvm.so");
+/// }
+/// ```
+pub fn libjvm_name() -> &'static str {
+    if cfg!(windows) {
+        "jvm.dll"
+    } else if cfg!(target_os = "macos") {
+        "libjvm.dylib"
+    } else {
+        "libjvm.so"
+    }
+}
+
 /// Return `%JAVA_HOME%\jre\bin\client\` or similar path.
 /// 
 /// Expected contents:
 /// * jvm.dll (windows)
+/// * libjvm.dylib (macos)
 /// * libjvm.so (unix)
 /// 
 /// ```rust
@@ -124,13 +147,15 @@ pub fn java_home() -> Result<PathBuf, io::Error> {
 /// 
 /// if cfg!(windows) {
 ///     assert!(jvm_dir.join("jvm.dll").exists());
+/// } else if cfg!(target_os = "macos") {
+///     assert!(jvm_dir.join("libjvm.dylib").exists());
 /// } else {
 ///     assert!(jvm_dir.join("libjvm.so").exists());
 /// }
 /// ```
 pub fn libjvm_dir(java_home: &impl AsRef<Path>) -> Result<PathBuf, io::Error> {
     let java_home = java_home.as_ref();
-    let libjvm = if cfg!(windows) { "jvm.dll" } else { "libjvm.so" };
+    let libjvm = libjvm_name();
 
     for path in [
         // TODO: Make it possible to indicate preference instead of prioritizing client?
@@ -153,6 +178,8 @@ pub fn libjvm_dir(java_home: &impl AsRef<Path>) -> Result<PathBuf, io::Error> {
         "bin/client",
         "bin/server",
 
+        // macos style JDKs
+        #[cfg(target_os = "macos")] "lib/server",
     ].iter().copied().map(|s| Path::new(s)) {
         let path = java_home.join(path);
         if path.join(libjvm).exists() {
