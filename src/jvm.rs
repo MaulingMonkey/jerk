@@ -82,7 +82,7 @@ unsafe fn sym(
     }
 }
 
-/// Represents a loaded `jvm.dll` or `libjvm.so` instance.
+/// Represents a loaded `jvm.dll`, `libjvm.so`, or `libjvm.dylib` instance.
 pub struct Library {
     jvm: JVMAPI,
 }
@@ -128,14 +128,14 @@ impl Library {
     pub fn from_java_home(java_home: &(impl AsRef<Path> + ?Sized)) -> Result<Library, LoadError> {
         let java_home = java_home.as_ref();
         let libjvm_dir = paths::libjvm_dir(&java_home)?;
-        Self::from_library_path(&libjvm_dir.join(if cfg!(windows) { "jvm.dll" } else { "libjvm.so" }))
+        Self::from_library_path(&libjvm_dir.join(paths::libjvm_name()))
     }
 
     /// Load a JVM library from a specific path.
     /// 
     /// # Arguments
     /// 
-    /// - `libjvm` - this should be a path to `jvm.dll` / `libjvm.so`
+    /// - `libjvm` - this should be a path to `jvm.dll` / `libjvm.so` / `libjvm.dylib`
     #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn from_library_path(libjvm: &(impl AsRef<Path> + ?Sized)) -> Result<Library, LoadError> {
         let libjvm = libjvm.as_ref();
