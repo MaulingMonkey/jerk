@@ -23,19 +23,7 @@ function test {
 }
 
 function doc {
-    if [[ -z "${CI}" ]]; then
-        # Not a CI build, assume you have a sane nightly installed
-        print_run cargo +nightly doc --no-deps --features="nightly" || exit 1
-
-    elif [ "${RUSTUP_TOOLCHAIN}" = "nightly" ]; then
-        # CI, but nightly
-        print_run cargo doc --no-deps --features="nightly" || exit 1
-
-    else
-        # CI, !nightly
-        print_run cargo doc --no-deps || exit 1
-
-    fi
+    print_run cargo +nightly doc --no-deps --features="nightly"
 }
 
 function print_run {
