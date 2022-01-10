@@ -178,8 +178,9 @@ pub fn libjvm_dir(java_home: &impl AsRef<Path>) -> Result<PathBuf, io::Error> {
         "bin/client",
         "bin/server",
 
-        // macos style JDKs
-        #[cfg(target_os = "macos")] "lib/server",
+        // Linux and macos style JDKs (11+)
+        "lib/client",
+        "lib/server",
     ].iter().copied().map(|s| Path::new(s)) {
         let path = java_home.join(path);
         if path.join(libjvm).exists() {
