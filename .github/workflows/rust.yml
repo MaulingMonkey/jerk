@@ -1,0 +1,39 @@
+name: Rust
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-ubuntu:
+    name: Ubuntu Latest
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Info
+      run: |
+        rustc -V
+        cargo -V
+    - name: APT Packages
+      run: sudo apt-get install -y openjdk-8-jdk openjdk-8-jre-headless unzip
+    - name: Test
+      run: |
+        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+        scripts/test.sh
+  build-windows:
+    name: Windows 2019 Server
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - name: Info
+      run: |
+        rustc -V
+        cargo -V
+        cmd /C ver
+    - name: Test
+      run: scripts\test.cmd

@@ -15,7 +15,7 @@ This is **not** an official project of Google, Oracle, Sun Microsystems, or anyo
 | Branch | Badges | Notes |
 | ------ | ------ | ----- |
 | [publish](https://github.com/MaulingMonkey/jerk/tree/publish) | [![Open issues](https://img.shields.io/github/issues-raw/MaulingMonkey/jerk.svg)](https://github.com/MaulingMonkey/jerk/issues) | Stable/published version
-| [master](https://github.com/MaulingMonkey/jerk/tree/master)   | [![Build Status](https://travis-ci.org/MaulingMonkey/jerk.svg)](https://travis-ci.org/MaulingMonkey/jerk) | "Completed" stuff that hasn't been published.
+| [master](https://github.com/MaulingMonkey/jerk/tree/master)   | [![Build Status](https://github.com/MaulingMonkey/jerk/workflows/Rust/badge.svg)](https://github.com/MaulingMonkey/jerk/actions?query=workflow%3Arust) | "Completed" stuff that hasn't been published.
 | wip/*                                                         | | "Work In Progress" - incomplete, use at your own risk.
 | dead/*                                                        | | Abandoned threads of work
 
