@@ -4,8 +4,6 @@
 members = [
     ".",
     "example-hello-world-jar",
-    "jerk-build",
-    "jerk-test",
 ]
 
 [package]

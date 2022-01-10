@@ -1,5 +1,8 @@
 # https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[workspace]
+members         = ["."]
+
 [package]
 name            = "jerk-build"
 version         = "0.2.0-git"

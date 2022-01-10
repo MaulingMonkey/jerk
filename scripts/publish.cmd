@@ -1,9 +1,7 @@
 @pushd "%~dp0.." && setlocal
 @set PUBLISH_ARGS=%*
 @if defined DELAY set /A DELAY = %DELAY% + 1
-@call :publish "%~dp0../jerk"       || goto :err
-@call :publish "%~dp0../jerk-build" || goto :err
-@call :publish "%~dp0../jerk-test"  || goto :err
+@call :publish "%~dp0../jerk" || goto :err
 :err
 @popd && endlocal && goto :EOF
 
