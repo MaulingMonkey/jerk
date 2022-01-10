@@ -3,7 +3,7 @@
 
 use crate::paths;
 use std::error::Error;
-use std::fmt::{self, Display, Formatter};
+use std::fmt::{self, Debug, Display, Formatter};
 use std::io;
 use std::os::raw::*;
 use std::path::{Path};
@@ -19,7 +19,7 @@ use jni_sys::*;
 }
 
 /// Error loading a [Library]
-/// 
+///
 /// [Library]:      struct.Library.html
 #[derive(Debug)]
 pub struct LoadError(io::Error);
@@ -28,10 +28,23 @@ impl Error                  for LoadError { fn source(&self) -> Option<&(dyn Err
 impl From<io::Error>        for LoadError { fn from(error: io::Error) -> Self { Self(error) } }
 
 /// Error calling a [Library] function
-/// 
+///
 /// [Library]:      struct.Library.html
-#[derive(Debug)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct JniError(jint);
+impl JniError {
+    pub const OK        : JniError = JniError(JNI_OK);
+    pub const DETACHED  : JniError = JniError(JNI_EDETACHED);
+    pub const VERSION   : JniError = JniError(JNI_EVERSION);
+    pub const NOMEM     : JniError = JniError(JNI_ENOMEM);
+    pub const EXIST     : JniError = JniError(JNI_EEXIST);
+    pub const INVAL     : JniError = JniError(JNI_EINVAL);
+}
+impl Debug for JniError {
+    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+        Display::fmt(self, fmt)
+    }
+}
 impl Display for JniError {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
         match self.0 {
@@ -45,7 +58,7 @@ impl Display for JniError {
         }
     }
 }
-impl Error   for JniError {}
+impl Error for JniError {}
 
 struct JVMAPI {
     JNI_CreateJavaVM:               unsafe extern "system" fn (pvm: *mut *mut JavaVM, penv: *mut *mut c_void, args: *mut c_void) -> jint,
@@ -89,7 +102,7 @@ pub struct Library {
 
 impl Library {
     /// Get an instance of the library by... whatever logic `jerk` feels like.  This currently means searching in this order:
-    /// 
+    ///
     /// * Already loaded symbols, in case Java is hosting us (`.jar` entry point like on Android) instead of us hosting Java
     /// * `%JAVA_HOME%`, if set
     /// * Various JDK locations that could totally have been set as `%JAVA_HOME%`
@@ -120,9 +133,9 @@ impl Library {
     }
 
     /// Load a JVM library from a specific `%JAVA_HOME%`.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `java_home` - this should be `%JAVA_HOME%` or similar.
     #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn from_java_home(java_home: &(impl AsRef<Path> + ?Sized)) -> Result<Library, LoadError> {
@@ -132,9 +145,9 @@ impl Library {
     }
 
     /// Load a JVM library from a specific path.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `libjvm` - this should be a path to `jvm.dll` / `libjvm.so` / `libjvm.dylib`
     #[cfg_attr(feature = "nightly", doc(cfg(not(target_os = "android"))))] // We actually still compile this in but discourage it as unlikely to work...
     pub fn from_library_path(libjvm: &(impl AsRef<Path> + ?Sized)) -> Result<Library, LoadError> {
