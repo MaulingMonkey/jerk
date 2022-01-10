@@ -14,7 +14,7 @@ cargo test  --all --target=x86_64-pc-windows-msvc   || goto :die-pop1
 
 @if not defined CI cargo +nightly doc --no-deps --features="nightly" || goto :die-pop1
 
-@where wsl >NUL 2>NUL && wsl bash --login -c scripts/test.sh || goto :die-pop1
+@if not defined CI where wsl >NUL 2>NUL && wsl bash --login -c scripts/test.sh || goto :die-pop1
 
 @popd && endlocal && exit /b 0
 
