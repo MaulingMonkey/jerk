@@ -16,15 +16,15 @@ pub fn env(var: &str) -> Option<PathBuf> {
 }
 
 /// Return `%ANDROID_SDK_ROOT%\platforms\android-29\` or similar path.
-/// 
+///
 /// Expected contents:
 /// * android.jar
-/// 
+///
 /// ```rust
 /// # if std::env::var_os("CI").is_none() {
 /// let android_sdk_root = jerk::paths::android_sdk_root().unwrap();
 /// let android_nn = jerk::paths::platforms_android_nn(&android_sdk_root).unwrap();
-/// 
+///
 /// assert!(android_nn.join("android.jar").exists());
 /// # }
 /// ```
@@ -35,7 +35,7 @@ pub fn platforms_android_nn(android_sdk_root: &impl AsRef<Path>) -> Result<PathB
 }
 
 /// Return `%ANDROID_SDK_ROOT%` or similar path.
-/// 
+///
 /// Possible contents (varies wildly based on what's installed):
 /// * build-tools/29.0.2/{aapt,aapt2,apksigner,lib,\*-linux-android\*-ld}
 /// * ndk-bundle/ndk-build
@@ -63,17 +63,17 @@ pub fn android_sdk_root() -> Result<PathBuf, io::Error> {
 }
 
 /// Return `%JAVA_HOME%` or similar path.
-/// 
+///
 /// Expected windows contents:
 /// * bin\java.exe
 /// * bin\javac.exe
 /// * bin\javadoc.exe
-/// 
+///
 /// Expected unix contents:
 /// * bin/java
 /// * bin/javac
 /// * bin/javadoc
-/// 
+///
 /// ```rust
 /// let java_home = jerk::paths::java_home().unwrap();
 /// let bin = java_home.join("bin");
@@ -135,16 +135,16 @@ pub fn libjvm_name() -> &'static str {
 }
 
 /// Return `%JAVA_HOME%\jre\bin\client\` or similar path.
-/// 
+///
 /// Expected contents:
 /// * jvm.dll (windows)
 /// * libjvm.dylib (macos)
 /// * libjvm.so (unix)
-/// 
+///
 /// ```rust
 /// let java_home   = jerk::paths::java_home().unwrap();
 /// let jvm_dir     = jerk::paths::libjvm_dir(&java_home).unwrap();
-/// 
+///
 /// if cfg!(windows) {
 ///     assert!(jvm_dir.join("jvm.dll").exists());
 /// } else if cfg!(target_os = "macos") {

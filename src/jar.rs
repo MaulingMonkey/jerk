@@ -1,5 +1,5 @@
 //! `%JAVA_HOME%\bin\jar` - Create `.jar` files from `.class` files
-//! 
+//!
 //! | Command       | Description                   | API |
 //! | ------------- | ----------------------------- | --- |
 //! | `jar c...`    | Create `.jar`                 | `jar::Archive{ ... }.create()`
@@ -63,14 +63,14 @@ impl<'a> Archive<'a> {
     }
 
     /// Create a new archive
-    /// 
+    ///
     /// Executes: `jar c...`
     pub fn create(&self) -> Result<()> {
         self.exec('c')
     }
 
     /// Update an existing archive
-    /// 
+    ///
     /// Executes: `jar u...`
     pub fn update(&self) -> Result<()> {
         self.exec('u')
