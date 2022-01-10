@@ -15,7 +15,7 @@ static VALUE : AtomicI32 = AtomicI32::new(0);
 
 #[no_mangle] pub extern "stdcall" fn Java_com_maulingmonkey_jerk_example_1hello_1world_1jar_Global_test() {
     // https://github.com/MaulingMonkey/jerk/issues/12
-    // 
+    //
     // Loading a separately build cdylib actually caused a whole second copy of
     // the entire crate to be loaded with it's own separate static vars and
     // everything.  This test would catch that.

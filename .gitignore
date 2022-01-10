@@ -1,3 +1,5 @@
+/example-hello-world-jar/hs_err_*.log
 /target
+/*/target
 **/*.rs.bk
 Cargo.lock

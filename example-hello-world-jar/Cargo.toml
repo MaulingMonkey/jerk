@@ -8,11 +8,11 @@ authors = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition = "2018"
 
 [lib]
-crate-type = ["dylib"]
+crate-type = ["rlib", "dylib"]
 
 [dependencies]
 jni-sys     = "0.3"
-jerk        = { version = "0.2.1", path = ".." }
+jerk        = { version = "0.2.2", path = ".." }
 
 [build-dependencies]
-jerk        = { version = "0.2.1", path = ".." }
+jerk        = { version = "0.2.2", path = ".." }

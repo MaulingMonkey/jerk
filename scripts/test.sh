@@ -2,11 +2,9 @@ export RUST_BACKTRACE=1
 
 function main {
     export ROOT=`pwd`
-    build           || exit 1
-    test            || exit 1
-    doc jerk        || exit 1
-    doc jerk-build  || exit 1
-    doc jerk-test   || exit 1
+    build   || exit 1
+    test    || exit 1
+    doc     || exit 1
 }
 
 function build {
@@ -14,25 +12,18 @@ function build {
 }
 
 function test {
-    print_run cargo test --all || exit 1
+    # set necessary env vars for metabuild script in Readme.md
+    export PROFILE="debug"
+    export OUT_DIR=target/readme
+    print_run cargo test --all
+    ERR=$?
+    export OUT_DIR=
+    export PROFILE=
+    exit $ERR
 }
 
 function doc {
-    pushd $1 >/dev/null
-    if [[ -z "${CI}" ]]; then
-        # Not a CI build, assume you have a sane nightly installed
-        print_run cargo +nightly doc --no-deps --features="nightly" || (popd >/dev/null && exit 1)
-
-    elif [ "${RUSTUP_TOOLCHAIN}" = "nightly" ]; then
-        # CI, but nightly
-        print_run cargo doc --no-deps --features="nightly" || (popd >/dev/null && exit 1)
-
-    else
-        # CI, !nightly
-        print_run cargo doc --no-deps || (popd >/dev/null && exit 1)
-
-    fi
-    popd >/dev/null
+    print_run cargo +nightly doc --no-deps --features="nightly"
 }
 
 function print_run {

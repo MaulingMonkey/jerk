@@ -4,7 +4,7 @@
 [![Docs](https://docs.rs/jerk/badge.svg)](https://docs.rs/jerk/)
 [![GitHub](https://img.shields.io/github/stars/MaulingMonkey/jerk.svg?label=GitHub&style=social)](https://github.com/MaulingMonkey/jerk)
 [![unsafe: yes](https://img.shields.io/github/search/MaulingMonkey/jerk/unsafe%2bextension%3Ars?color=yellow&label=unsafe)](https://github.com/MaulingMonkey/jerk/search?q=unsafe+extension%3Ars)
-[![rust: 1.36.0+](https://img.shields.io/badge/rust-1.36.0%2B-green.svg)](https://gist.github.com/MaulingMonkey/c81a9f18811079f19326dac4daa5a359#minimum-supported-rust-versions-msrv)
+[![rust: 1.54.0+](https://img.shields.io/badge/rust-1.54.0%2B-green.svg)](https://gist.github.com/MaulingMonkey/c81a9f18811079f19326dac4daa5a359#minimum-supported-rust-versions-msrv)
 [![License](https://img.shields.io/crates/l/jerk.svg)](https://github.com/MaulingMonkey/jerk)
 
 Libraries to compile/embed/test Java alongside a Rust library/application.
@@ -15,7 +15,7 @@ This is **not** an official project of Google, Oracle, Sun Microsystems, or anyo
 | Branch | Badges | Notes |
 | ------ | ------ | ----- |
 | [publish](https://github.com/MaulingMonkey/jerk/tree/publish) | [![Open issues](https://img.shields.io/github/issues-raw/MaulingMonkey/jerk.svg)](https://github.com/MaulingMonkey/jerk/issues) | Stable/published version
-| [master](https://github.com/MaulingMonkey/jerk/tree/master)   | [![Build Status](https://travis-ci.org/MaulingMonkey/jerk.svg)](https://travis-ci.org/MaulingMonkey/jerk) | "Completed" stuff that hasn't been published.
+| [master](https://github.com/MaulingMonkey/jerk/tree/master)   | [![Build Status](https://github.com/MaulingMonkey/jerk/workflows/Rust/badge.svg)](https://github.com/MaulingMonkey/jerk/actions?query=workflow%3Arust) | "Completed" stuff that hasn't been published.
 | wip/*                                                         | | "Work In Progress" - incomplete, use at your own risk.
 | dead/*                                                        | | Abandoned threads of work
 
@@ -40,7 +40,7 @@ Add this to your [Cargo.toml](https://github.com/MaulingMonkey/jerk/blob/master/
 
 ```toml
 [lib]
-crate-type = ["dylib"]
+crate-type = ["rlib", "dylib"]
 
 [dependencies]
 jni-sys     = "0.3"
@@ -85,7 +85,6 @@ use jni_sys::{JNIEnv, jobject, jint};
 ...and write Java integration tests ([tests/test.rs](https://github.com/MaulingMonkey/jerk/blob/master/example-hello-world-jar/tests/test.rs)):
 
 ```rust
-extern crate example_hello_world_jar; // force dylib to build
 #[test] fn test() {
     jerk::run_test!("com.maulingmonkey.jerk.example_hello_world_jar", "Adder", "test");
 }
@@ -119,8 +118,8 @@ You can still have:
 
 Licensed under either of
 
-* Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
-* MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+* Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
+* MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option.
 

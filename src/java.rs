@@ -45,7 +45,7 @@ impl<'a> Run<'a> {
 
         let mut cmd = Command::new(java_home.join("bin/java"));
         // -d32 -d64 -server
-        
+
         for classpath in self.classpaths    { cmd.arg("-cp").arg(classpath); }
         for (k,v) in self.system_properties { cmd.arg(format!("-D{}={}", k, v)); }
 

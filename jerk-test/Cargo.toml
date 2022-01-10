@@ -1,5 +1,8 @@
 # https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[workspace]
+members         = ["."]
+
 [package]
 name            = "jerk-test"
 version         = "0.2.1"
