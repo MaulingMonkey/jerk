@@ -5,7 +5,7 @@ use crate::paths;
 use std::error::Error;
 use std::fmt::{self, Debug, Display, Formatter};
 use std::io;
-use std::os::raw::*;
+use std::os::raw::c_void;
 use std::path::{Path};
 use std::ptr::*;
 use jni_sys::*;
