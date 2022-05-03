@@ -12,7 +12,7 @@ crate-type = ["rlib", "dylib"]
 
 [dependencies]
 jni-sys     = "0.3"
-jerk        = { version = "0.2.2", path = ".." }
+jerk        = { version = "0.2.3", path = ".." }
 
 [build-dependencies]
-jerk        = { version = "0.2.2", path = ".." }
+jerk        = { version = "0.2.3", path = ".." }
